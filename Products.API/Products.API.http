@@ -1,6 +1,32 @@
-@Products.API_HostAddress = http://localhost:5221
+@Products.API_HostAddress = http://localhost:5101
 
-GET {{Products.API_HostAddress}}/weatherforecast/
+### Listar productos (con filtros opcionales)
+GET {{Products.API_HostAddress}}/api/products?categoria=Electrónica&nombre=dell
 Accept: application/json
 
-###
+### Crear producto
+POST {{Products.API_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "nombre": "Notebook Dell XPS 15",
+  "descripcion": "Laptop 15 pulgadas, 32GB RAM",
+  "precio": 1500.00,
+  "stock": 10,
+  "categoria": "Electrónica"
+}
+
+### Producto inexistente → 404 PRD-001
+GET {{Products.API_HostAddress}}/api/products/3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+### Datos inválidos → 400 PRD-002
+POST {{Products.API_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "precio": 0,
+  "stock": -1
+}
+
+### Health checks
+GET {{Products.API_HostAddress}}/health
