@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json.Nodes;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -8,7 +7,6 @@ namespace Products.API.Swagger
     /// <summary>
     /// Marca un endpoint con un posible error del catálogo para que Swagger muestre su ejemplo.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class ErrorExampleAttribute(int statusCode, string errorCode) : Attribute
     {
         public int StatusCode { get; } = statusCode;
@@ -42,7 +40,8 @@ namespace Products.API.Swagger
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            var attributes = context.MethodInfo.GetCustomAttributes<ErrorExampleAttribute>();
+            // En Minimal API el atributo se agrega con .WithMetadata(...) en cada endpoint
+            var attributes = context.ApiDescription.ActionDescriptor.EndpointMetadata.OfType<ErrorExampleAttribute>();
 
             foreach (var attr in attributes)
             {

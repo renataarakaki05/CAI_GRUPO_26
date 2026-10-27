@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Products.API.Clients;
 using Products.API.Data;
 using Products.API.DTOs;
 using Products.API.Exceptions;
 using Products.API.Models;
+using ValidationException = Products.API.Exceptions.ValidationException;
 
 namespace Products.API.Services
 {
@@ -42,6 +44,8 @@ namespace Products.API.Services
 
         public async Task<ProductoDto> CreateAsync(CrearProductoDto request)
         {
+            Validar(request);
+
             var nombre = request.Nombre.Trim();
             var categoria = request.Categoria.Trim();
 
@@ -72,6 +76,7 @@ namespace Products.API.Services
 
         public async Task<ProductoDto> UpdateAsync(Guid id, CrearProductoDto request)
         {
+            Validar(request);
             var Producto = await GetExistingAsync(id);
 
             Producto.Nombre = request.Nombre.Trim();
@@ -96,6 +101,18 @@ namespace Products.API.Services
 
             await _repo.DeleteAsync(id);
             _logger.LogInformation("Producto {ProductoId} eliminado", id);
+        }
+
+        // Valida las Data Annotations del DTO; todos los problemas van separados por punto y coma (PRD-002)
+        private static void Validar(CrearProductoDto request)
+        {
+            var resultados = new List<ValidationResult>();
+            if (Validator.TryValidateObject(request, new ValidationContext(request), resultados, validateAllProperties: true))
+                return;
+
+            var errores = resultados.Select(r => r.ErrorMessage);
+            throw new ValidationException(ErrorCodes.PRD_002,
+                $"Los datos del producto son inválidos: {string.Join("; ", errores)}.");
         }
 
         private async Task<Producto> GetExistingAsync(Guid id) =>

@@ -1,10 +1,9 @@
-using System.Diagnostics;
 using Serilog.Context;
 
 namespace Products.API.Middleware
 {
     // Genera (o reutiliza) el X-Correlation-Id de cada request, lo agrega a todos los logs
-    // del request y loggea el inicio y el fin con su duración.
+    // del request y loggea el inicio.
     public class CorrelationIdMiddleware
     {
         public const string HeaderName = "X-Correlation-Id";
@@ -38,18 +37,9 @@ namespace Products.API.Middleware
             using (LogContext.PushProperty("CorrelationId", correlationId))
             using (LogContext.PushProperty("Endpoint", endpoint))
             {
-                var stopwatch = Stopwatch.StartNew();
+                // El fin del request con su duración lo loggea UseSerilogRequestLogging
                 _logger.LogInformation("Inicio request {Endpoint}", endpoint);
-                try
-                {
-                    await _next(context);
-                }
-                finally
-                {
-                    stopwatch.Stop();
-                    _logger.LogInformation("Fin request {Endpoint} → {StatusCode} en {Elapsed} ms",
-                        endpoint, context.Response.StatusCode, stopwatch.ElapsedMilliseconds);
-                }
+                await _next(context);
             }
         }
     }
