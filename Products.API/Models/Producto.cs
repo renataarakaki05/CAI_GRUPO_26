@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Products.API.Models
 {
-    public class Producto
+    public class Producto //la información de un producto
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -14,7 +14,7 @@ namespace Products.API.Models
         [StringLength(500)]
         public string? Descripcion { get; set; }
 
-        [Range(typeof(decimal), "0.01", "79228162514264337593543950335")]
+        [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ParseLimitsInInvariantCulture = true)]
         public decimal Precio { get; set; }
 
         [Range(0, int.MaxValue)]
