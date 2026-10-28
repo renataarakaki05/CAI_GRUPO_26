@@ -5,7 +5,7 @@ using Products.API.Models;
 
 namespace Products.API.Data
 {
-    // Persistencia basada en el ItemRepository de la cátedra (Dapper + SQLite).
+    //  basada en el ItemRepository (Dapper + SQLite).
     public class ProductoRepository
     {
         private readonly IConfiguration _config;
