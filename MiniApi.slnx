@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="MiniApi/MiniApi.csproj" />
   <Project Path="Products.API/Products.API.csproj" Id="9641c650-3e33-47de-815a-bb0ce729b655" />
+  <Project Path="Notifications.API/Notifications.API.csproj" />
 </Solution>

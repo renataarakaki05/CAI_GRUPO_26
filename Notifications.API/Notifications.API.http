@@ -1,0 +1,27 @@
+@Notifications.API_HostAddress = http://localhost:5105
+
+### Enviar notificación (necesita Users.API levantada en el puerto 5102)
+POST {{Notifications.API_HostAddress}}/api/notifications/send
+Content-Type: application/json
+
+{
+  "usuarioId": "a1b2c3d4-0000-0000-0000-111122223333",
+  "mensaje": "Su orden #f1e2d3c4 fue confirmada.",
+  "tipo": "Email"
+}
+
+### Datos inválidos → 400 NTF-002
+POST {{Notifications.API_HostAddress}}/api/notifications/send
+Content-Type: application/json
+
+{
+  "usuarioId": "a1b2c3d4-0000-0000-0000-111122223333",
+  "mensaje": "",
+  "tipo": "Fax"
+}
+
+### Notificaciones de un usuario
+GET {{Notifications.API_HostAddress}}/api/notifications/a1b2c3d4-0000-0000-0000-111122223333
+
+### Health checks
+GET {{Notifications.API_HostAddress}}/health
