@@ -26,7 +26,13 @@ namespace Notifications.API.Data
             ORDER BY fecha_envio DESC
         """, new { usuarioId = usuarioId.ToString() });
 
-            return rows.Select(r => r.ToEntity());
+            var notificaciones = new List<Notificacion>();
+            foreach (var row in rows)
+            {
+                notificaciones.Add(row.ToEntity());
+            }
+
+            return notificaciones;
         }
 
         // ── CREATE ────────────────────────────────────────────────────────────

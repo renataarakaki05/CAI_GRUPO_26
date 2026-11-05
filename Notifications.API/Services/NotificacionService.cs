@@ -33,13 +33,23 @@ namespace Notifications.API.Services
             if (!await _users.ExisteUsuarioAsync(usuarioId, ct))
                 throw new NotFoundException(ErrorCodes.NTF_001, "El usuario destinatario no fue encontrado.");
 
+            // Se guarda con la forma canónica aunque llegue "email" o "sms"
+            var tipo = request.Tipo.Trim();
+            foreach (var tipoValido in TiposValidos)
+            {
+                if (tipoValido.Equals(tipo, StringComparison.OrdinalIgnoreCase))
+                {
+                    tipo = tipoValido;
+                    break;
+                }
+            }
+
             var notificacion = new Notificacion
             {
                 Id = Guid.NewGuid(),
                 UsuarioId = usuarioId,
                 Mensaje = request.Mensaje.Trim(),
-                // Se guarda con la forma canónica aunque llegue "email" o "sms"
-                Tipo = TiposValidos.First(t => t.Equals(request.Tipo.Trim(), StringComparison.OrdinalIgnoreCase)),
+                Tipo = tipo,
                 FechaEnvio = DateTime.UtcNow
             };
 
@@ -55,12 +65,18 @@ namespace Notifications.API.Services
 
         public async Task<IEnumerable<NotificacionDto>> GetByUsuarioAsync(Guid usuarioId)
         {
-            var notificaciones = (await _repo.GetByUsuarioAsync(usuarioId)).ToList();
+            var notificaciones = await _repo.GetByUsuarioAsync(usuarioId);
 
-            if (notificaciones.Count == 0)
+            var resultado = new List<NotificacionDto>();
+            foreach (var notificacion in notificaciones)
+            {
+                resultado.Add(NotificacionDto.FromEntity(notificacion));
+            }
+
+            if (resultado.Count == 0)
                 throw new NotFoundException(ErrorCodes.NTF_003, "No se encontraron notificaciones para el usuario.");
 
-            return notificaciones.Select(NotificacionDto.FromEntity);
+            return resultado;
         }
 
         // Valida las Data Annotations del DTO; todos los problemas van separados por punto y coma (NTF-002)
@@ -70,7 +86,12 @@ namespace Notifications.API.Services
             if (Validator.TryValidateObject(request, new ValidationContext(request), resultados, validateAllProperties: true))
                 return;
 
-            var errores = resultados.Select(r => r.ErrorMessage);
+            var errores = new List<string?>();
+            foreach (var resultado in resultados)
+            {
+                errores.Add(resultado.ErrorMessage);
+            }
+
             throw new ValidationException(ErrorCodes.NTF_002,
                 $"Los datos de la notificación son inválidos: {string.Join("; ", errores)}.");
         }
