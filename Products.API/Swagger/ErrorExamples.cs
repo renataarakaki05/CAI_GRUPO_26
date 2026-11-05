@@ -41,10 +41,9 @@ namespace Products.API.Swagger
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             // En Minimal API el atributo se agrega con .WithMetadata(...) en cada endpoint
-            var attributes = context.ApiDescription.ActionDescriptor.EndpointMetadata.OfType<ErrorExampleAttribute>();
-
-            foreach (var attr in attributes)
+            foreach (var metadata in context.ApiDescription.ActionDescriptor.EndpointMetadata)
             {
+                if (metadata is not ErrorExampleAttribute attr) continue;
                 if (!Catalogo.TryGetValue(attr.ErrorCode, out var ex)) continue;
 
                 var example = new JsonObject

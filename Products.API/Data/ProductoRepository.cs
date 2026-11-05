@@ -26,7 +26,14 @@ namespace Products.API.Data
         {
             using var conn = CreateConnection();
             var rows = await conn.QueryAsync<ProductRow>($"{SelectColumns} ORDER BY fecha_creacion DESC");
-            return rows.Select(r => r.ToEntity());
+
+            var productos = new List<Producto>();
+            foreach (var row in rows)
+            {
+                productos.Add(row.ToEntity());
+            }
+
+            return productos;
         }
 
         // ── GET BY ID ─────────────────────────────────────────────────────────

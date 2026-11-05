@@ -25,15 +25,23 @@ namespace Products.API.Services
 
         public async Task<IEnumerable<ProductoDto>> GetAllAsync(string? categoria, string? nombre)
         {
-            var products = await _repo.GetAllAsync();
+            var productos = await _repo.GetAllAsync();
+            var resultado = new List<ProductoDto>();
 
-            if (!string.IsNullOrWhiteSpace(categoria))
-                products = products.Where(p => p.Categoria.Equals(categoria.Trim(), StringComparison.OrdinalIgnoreCase));
+            foreach (var producto in productos)
+            {
+                if (!string.IsNullOrWhiteSpace(categoria) &&
+                    !producto.Categoria.Equals(categoria.Trim(), StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-            if (!string.IsNullOrWhiteSpace(nombre))
-                products = products.Where(p => p.Nombre.Contains(nombre.Trim(), StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrWhiteSpace(nombre) &&
+                    !producto.Nombre.Contains(nombre.Trim(), StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-            return products.Select(ProductoDto.FromEntity);
+                resultado.Add(ProductoDto.FromEntity(producto));
+            }
+
+            return resultado;
         }
 
         public async Task<ProductoDto> GetByIdAsync(Guid id)
@@ -50,11 +58,14 @@ namespace Products.API.Services
             var categoria = request.Categoria.Trim();
 
             var existentes = await _repo.GetAllAsync();
-            if (existentes.Any(p => p.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase) &&
-                                    p.Categoria.Equals(categoria, StringComparison.OrdinalIgnoreCase)))
+            foreach (var existente in existentes)
             {
-                throw new BusinessRuleException(ErrorCodes.PRD_003,
-                    $"Ya existe un producto con ese nombre en la categoría '{categoria}'.");
+                if (existente.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase) &&
+                    existente.Categoria.Equals(categoria, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new BusinessRuleException(ErrorCodes.PRD_003,
+                        $"Ya existe un producto con ese nombre en la categoría '{categoria}'.");
+                }
             }
 
             var Producto = new Producto
@@ -110,7 +121,12 @@ namespace Products.API.Services
             if (Validator.TryValidateObject(request, new ValidationContext(request), resultados, validateAllProperties: true))
                 return;
 
-            var errores = resultados.Select(r => r.ErrorMessage);
+            var errores = new List<string?>();
+            foreach (var resultado in resultados)
+            {
+                errores.Add(resultado.ErrorMessage);
+            }
+
             throw new ValidationException(ErrorCodes.PRD_002,
                 $"Los datos del producto son inválidos: {string.Join("; ", errores)}.");
         }

@@ -41,9 +41,27 @@ namespace Products.API.Clients
 
             var orders = await response.Content.ReadFromJsonAsync<List<OrderDto>>(ct) ?? [];
 
-            return orders.Any(o =>
-                EstadosActivos.Contains(o.Estado, StringComparer.OrdinalIgnoreCase) &&
-                o.Items.Any(i => i.ProductoId == productoId));
+            foreach (var order in orders)
+            {
+                if (!EsEstadoActivo(order.Estado)) continue;
+
+                foreach (var item in order.Items)
+                {
+                    if (item.ProductoId == productoId) return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool EsEstadoActivo(string estado)
+        {
+            foreach (var estadoActivo in EstadosActivos)
+            {
+                if (estadoActivo.Equals(estado, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+
+            return false;
         }
 
         // Solo los campos de la orden que necesitamos
