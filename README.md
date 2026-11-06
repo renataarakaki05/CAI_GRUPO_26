@@ -198,6 +198,7 @@ Las respuestas nunca incluyen el stack trace. En `appsettings.Development.json` 
 | USR-004 | 403 | Usuario bloqueado por demasiados intentos fallidos. | POST /login con 3+ intentos fallidos acumulados. |
 | USR-005 | 403 | Usuario bloqueado por detección de fraude. | POST /login cuando el usuario fue bloqueado manualmente. |
 | USR-006 | 500 | Error interno al procesar el usuario. | Error inesperado en servicio o persistencia. |
+| USR-007 | 404 | Usuario no encontrado. | GET /{id} cuando el ID no existe. |
 
 ### Orders.API
 
