@@ -7,19 +7,39 @@ namespace Products.API.Swagger
     /// <summary>
     /// Marca un endpoint con un posible error del catálogo para que Swagger muestre su ejemplo.
     /// </summary>
-    public class ErrorExampleAttribute(int statusCode, string errorCode) : Attribute
+    public class ErrorExampleAttribute : Attribute
     {
-        public int StatusCode { get; } = statusCode;
-        public string ErrorCode { get; } = errorCode;
+        public int StatusCode { get; }
+        public string ErrorCode { get; }
+
+        public ErrorExampleAttribute(int statusCode, string errorCode)
+        {
+            StatusCode = statusCode;
+            ErrorCode = errorCode;
+        }
     }
 
     // Agrega a Swagger el ejemplo de response de error de cada [ErrorExample],
     // siguiendo los contratos de la sección 4.1 de la consigna.
     public class ErrorExamplesOperationFilter : IOperationFilter
     {
-        private sealed record Example(string Type, string Title, string Detail, string ErrorMessage);
+        private class Example
+        {
+            public string Type { get; }
+            public string Title { get; }
+            public string Detail { get; }
+            public string ErrorMessage { get; }
 
-        private static readonly Dictionary<string, Example> Catalogo = new()
+            public Example(string type, string title, string detail, string errorMessage)
+            {
+                Type = type;
+                Title = title;
+                Detail = detail;
+                ErrorMessage = errorMessage;
+            }
+        }
+
+        private static readonly Dictionary<string, Example> Catalogo = new Dictionary<string, Example>
         {
             ["PRD-001"] = new("https://tools.ietf.org/html/rfc7231#section-6.5.4", "Not Found",
                 "El recurso solicitado no fue encontrado.",
@@ -41,13 +61,19 @@ namespace Products.API.Swagger
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             // El instance sale de la ruta del endpoint, porque un mismo código puede usarse en varios endpoints
-            var instance = "/" + context.ApiDescription.RelativePath?.Replace("{id}", "3fa85f64-5717-4562-b3fc-2c963f66afa6");
+            var instance = "/" + context.ApiDescription.RelativePath;
+            instance = instance.Replace("{id}", "3fa85f64-5717-4562-b3fc-2c963f66afa6");
 
             // En Minimal API el atributo se agrega con .WithMetadata(...) en cada endpoint
             foreach (var metadata in context.ApiDescription.ActionDescriptor.EndpointMetadata)
             {
-                if (metadata is not ErrorExampleAttribute attr) continue;
-                if (!Catalogo.TryGetValue(attr.ErrorCode, out var ex)) continue;
+                var attr = metadata as ErrorExampleAttribute;
+                if (attr == null)
+                {
+                    continue;
+                }
+
+                var ex = Catalogo[attr.ErrorCode];
 
                 var example = new JsonObject
                 {
@@ -61,18 +87,17 @@ namespace Products.API.Swagger
                     ["correlationId"] = "0f8fad5b-d9cb-469f-a165-70867728950e"
                 };
 
-                operation.Responses ??= new OpenApiResponses();
-                var key = attr.StatusCode.ToString();
+                var response = new OpenApiResponse();
+                response.Description = $"{attr.ErrorCode}: {ex.ErrorMessage}";
+                response.Content = new Dictionary<string, OpenApiMediaType>();
+                response.Content["application/problem+json"] = new OpenApiMediaType { Example = example };
 
-                if (!operation.Responses.TryGetValue(key, out var response) || response is not OpenApiResponse openApiResponse)
+                if (operation.Responses == null)
                 {
-                    openApiResponse = new OpenApiResponse { Description = $"{attr.ErrorCode}: {ex.ErrorMessage}" };
-                    operation.Responses[key] = openApiResponse;
+                    operation.Responses = new OpenApiResponses();
                 }
 
-                openApiResponse.Content ??= new Dictionary<string, OpenApiMediaType>();
-                openApiResponse.Content.Clear();
-                openApiResponse.Content["application/problem+json"] = new OpenApiMediaType { Example = example };
+                operation.Responses[attr.StatusCode.ToString()] = response;
             }
         }
     }

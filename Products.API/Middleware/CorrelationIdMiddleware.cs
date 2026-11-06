@@ -46,18 +46,38 @@ namespace Products.API.Middleware
 
     public static class CorrelationIdExtensions
     {
-        public static string? GetCorrelationId(this HttpContext context) =>
-            context.Items.TryGetValue(CorrelationIdMiddleware.ItemKey, out var id) ? id as string : null;
+        public static string? GetCorrelationId(this HttpContext context)
+        {
+            if (context.Items.TryGetValue(CorrelationIdMiddleware.ItemKey, out var id))
+            {
+                return id as string;
+            }
+
+            return null;
+        }
     }
 
     // Propaga el Correlation ID en las llamadas HTTP salientes (IHttpClientFactory)
-    public class CorrelationIdDelegatingHandler(IHttpContextAccessor accessor) : DelegatingHandler
+    public class CorrelationIdDelegatingHandler : DelegatingHandler
     {
+        private readonly IHttpContextAccessor _accessor;
+
+        public CorrelationIdDelegatingHandler(IHttpContextAccessor accessor)
+        {
+            _accessor = accessor;
+        }
+
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            var correlationId = accessor.HttpContext?.GetCorrelationId();
-            if (correlationId is not null && !request.Headers.Contains(CorrelationIdMiddleware.HeaderName))
-                request.Headers.Add(CorrelationIdMiddleware.HeaderName, correlationId);
+            var context = _accessor.HttpContext;
+            if (context != null)
+            {
+                var correlationId = context.GetCorrelationId();
+                if (correlationId != null && !request.Headers.Contains(CorrelationIdMiddleware.HeaderName))
+                {
+                    request.Headers.Add(CorrelationIdMiddleware.HeaderName, correlationId);
+                }
+            }
 
             return base.SendAsync(request, ct);
         }

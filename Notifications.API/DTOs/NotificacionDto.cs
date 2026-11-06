@@ -25,14 +25,16 @@ namespace Notifications.API.DTOs
         /// <example>2024-03-10T12:01:00Z</example>
         public DateTime FechaEnvio { get; set; }
 
-        public static NotificacionDto FromEntity(Notificacion n) => new()
+        public static NotificacionDto FromEntity(Notificacion n)
         {
-            Id = n.Id,
-            UsuarioId = n.UsuarioId,
-            Mensaje = n.Mensaje,
-            Tipo = n.Tipo,
-            Estado = n.Estado,
-            FechaEnvio = n.FechaEnvio
-        };
+            var dto = new NotificacionDto();
+            dto.Id = n.Id;
+            dto.UsuarioId = n.UsuarioId;
+            dto.Mensaje = n.Mensaje;
+            dto.Tipo = n.Tipo;
+            dto.Estado = n.Estado;
+            dto.FechaEnvio = n.FechaEnvio;
+            return dto;
+        }
     }
 }

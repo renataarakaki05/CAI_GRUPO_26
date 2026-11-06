@@ -1,20 +1,34 @@
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Products.API.Exceptions;
 
 namespace Products.API.ExceptionHandlers
 {
-    public class BusinessRuleExceptionHandler(ILogger<BusinessRuleExceptionHandler> logger) : IExceptionHandler
+    public class BusinessRuleExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<BusinessRuleExceptionHandler> _logger;
+
+        public BusinessRuleExceptionHandler(ILogger<BusinessRuleExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
+
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
         {
-            if (exception is not BusinessRuleException ex) return false;
+            // Este handler solo atiende BusinessRuleException; las demás siguen al próximo handler
+            var ex = exception as BusinessRuleException;
+            if (ex == null)
+            {
+                return false;
+            }
 
-            logger.LogWarning("{ErrorCode} {ErrorMessage}", ex.ErrorCode, ex.Message);
+            _logger.LogWarning("{ErrorCode} {ErrorMessage}", ex.ErrorCode, ex.Message);
 
             // PRD-003 es un duplicado al crear; PRD-004 es un borrado que no se permite
-            var detail = ex.ErrorCode == ErrorCodes.PRD_004
-                ? "No se puede eliminar el recurso."
-                : "Ya existe un recurso con esos datos.";
+            var detail = "Ya existe un recurso con esos datos.";
+            if (ex.ErrorCode == ErrorCodes.PRD_004)
+            {
+                detail = "No se puede eliminar el recurso.";
+            }
 
             await ErrorResponseWriter.WriteAsync(context,
                 status: StatusCodes.Status409Conflict,

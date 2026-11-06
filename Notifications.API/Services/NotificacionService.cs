@@ -12,7 +12,7 @@ namespace Notifications.API.Services
     // de dominio y los IExceptionHandler arman la respuesta.
     public class NotificacionService
     {
-        private static readonly string[] TiposValidos = ["Email", "Push", "SMS"];
+        private static readonly string[] TiposValidos = { "Email", "Push", "SMS" };
 
         private readonly NotificacionRepository _repo;
         private readonly UsersClient _users;

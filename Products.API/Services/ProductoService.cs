@@ -131,8 +131,15 @@ namespace Products.API.Services
                 $"Los datos del producto son inválidos: {string.Join("; ", errores)}.");
         }
 
-        private async Task<Producto> GetExistingAsync(Guid id) =>
-            await _repo.GetByIdAsync(id)
-            ?? throw new NotFoundException(ErrorCodes.PRD_001, "Producto no encontrado.");
+        private async Task<Producto> GetExistingAsync(Guid id)
+        {
+            var producto = await _repo.GetByIdAsync(id);
+            if (producto == null)
+            {
+                throw new NotFoundException(ErrorCodes.PRD_001, "Producto no encontrado.");
+            }
+
+            return producto;
+        }
     }
 }

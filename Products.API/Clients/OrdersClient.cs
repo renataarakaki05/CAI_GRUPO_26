@@ -6,8 +6,6 @@ namespace Products.API.Clients
     // no se puede eliminar un producto que está en órdenes Pendiente o Confirmada.
     public class OrdersClient
     {
-        private static readonly string[] EstadosActivos = ["Pendiente", "Confirmada"];
-
         private readonly HttpClient _http;
         private readonly ILogger<OrdersClient> _logger;
 
@@ -39,15 +37,25 @@ namespace Products.API.Clients
                 return false;
             }
 
-            var orders = await response.Content.ReadFromJsonAsync<List<OrderDto>>(ct) ?? [];
+            var orders = await response.Content.ReadFromJsonAsync<List<OrderDto>>(ct);
+            if (orders == null)
+            {
+                return false;
+            }
 
             foreach (var order in orders)
             {
-                if (!EsEstadoActivo(order.Estado)) continue;
+                if (!EsEstadoActivo(order.Estado))
+                {
+                    continue;
+                }
 
                 foreach (var item in order.Items)
                 {
-                    if (item.ProductoId == productoId) return true;
+                    if (item.ProductoId == productoId)
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -56,16 +64,20 @@ namespace Products.API.Clients
 
         private static bool EsEstadoActivo(string estado)
         {
-            foreach (var estadoActivo in EstadosActivos)
-            {
-                if (estadoActivo.Equals(estado, StringComparison.OrdinalIgnoreCase)) return true;
-            }
-
-            return false;
+            return estado.Equals("Pendiente", StringComparison.OrdinalIgnoreCase)
+                || estado.Equals("Confirmada", StringComparison.OrdinalIgnoreCase);
         }
 
         // Solo los campos de la orden que necesitamos
-        private sealed record OrderDto(string Estado, List<OrderItemDto> Items);
-        private sealed record OrderItemDto(Guid ProductoId);
+        private class OrderDto
+        {
+            public string Estado { get; set; } = string.Empty;
+            public List<OrderItemDto> Items { get; set; } = new List<OrderItemDto>();
+        }
+
+        private class OrderItemDto
+        {
+            public Guid ProductoId { get; set; }
+        }
     }
 }

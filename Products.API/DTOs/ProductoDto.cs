@@ -28,15 +28,17 @@ namespace Products.API.DTOs
         /// <example>2024-01-15T10:30:00Z</example>
         public DateTime FechaCreacion { get; set; }
 
-        public static ProductoDto FromEntity(Producto p) => new()
+        public static ProductoDto FromEntity(Producto p)
         {
-            Id = p.Id,
-            Nombre = p.Nombre,
-            Descripcion = p.Descripcion,
-            Precio = p.Precio,
-            Stock = p.Stock,
-            Categoria = p.Categoria,
-            FechaCreacion = p.FechaCreacion
-        };
+            var dto = new ProductoDto();
+            dto.Id = p.Id;
+            dto.Nombre = p.Nombre;
+            dto.Descripcion = p.Descripcion;
+            dto.Precio = p.Precio;
+            dto.Stock = p.Stock;
+            dto.Categoria = p.Categoria;
+            dto.FechaCreacion = p.FechaCreacion;
+            return dto;
+        }
     }
 }

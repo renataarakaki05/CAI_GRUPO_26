@@ -1,18 +1,27 @@
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Notifications.API.Exceptions;
 
 namespace Notifications.API.ExceptionHandlers
 {
     // Red de seguridad: atrapa cualquier excepción que no manejaron los handlers anteriores
     // (incluido Users.API caído o respondiendo con error).
-    public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IConfiguration config) : IExceptionHandler
+    public class GlobalExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+        private readonly IConfiguration _config;
+
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IConfiguration config)
+        {
+            _logger = logger;
+            _config = config;
+        }
+
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
         {
             // Error inesperado → Error (el stack trace queda solo en el log, nunca en la respuesta)
-            logger.LogError(exception, "{ErrorCode} Error inesperado: {Message}", ErrorCodes.NTF_004, exception.Message);
+            _logger.LogError(exception, "{ErrorCode} Error inesperado: {Message}", ErrorCodes.NTF_004, exception.Message);
 
-            var includeDetails = config.GetValue<bool>("ErrorHandling:IncludeExceptionDetails");
+            var includeDetails = _config.GetValue<bool>("ErrorHandling:IncludeExceptionDetails");
 
             await ErrorResponseWriter.WriteAsync(context,
                 status: StatusCodes.Status500InternalServerError,

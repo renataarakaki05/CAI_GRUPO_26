@@ -1,16 +1,28 @@
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Products.API.Exceptions;
 
 namespace Products.API.ExceptionHandlers
 {
-    public class NotFoundExceptionHandler(ILogger<NotFoundExceptionHandler> logger) : IExceptionHandler
+    public class NotFoundExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<NotFoundExceptionHandler> _logger;
+
+        public NotFoundExceptionHandler(ILogger<NotFoundExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
+
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
         {
-            if (exception is not NotFoundException ex) return false;
+            // Este handler solo atiende NotFoundException; las demás siguen al próximo handler
+            var ex = exception as NotFoundException;
+            if (ex == null)
+            {
+                return false;
+            }
 
             // Error de negocio → Warning
-            logger.LogWarning("{ErrorCode} {ErrorMessage}", ex.ErrorCode, ex.Message);
+            _logger.LogWarning("{ErrorCode} {ErrorMessage}", ex.ErrorCode, ex.Message);
 
             await ErrorResponseWriter.WriteAsync(context,
                 status: StatusCodes.Status404NotFound,

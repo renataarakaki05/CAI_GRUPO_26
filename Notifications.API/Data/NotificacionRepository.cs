@@ -46,32 +46,34 @@ namespace Notifications.API.Data
             {
                 Id = notificacion.Id.ToString(),
                 UsuarioId = notificacion.UsuarioId.ToString(),
-                notificacion.Mensaje,
-                notificacion.Tipo,
-                notificacion.Estado,
+                Mensaje = notificacion.Mensaje,
+                Tipo = notificacion.Tipo,
+                Estado = notificacion.Estado,
                 FechaEnvio = notificacion.FechaEnvio.ToString("o", CultureInfo.InvariantCulture)
             });
         }
 
         // Fila tal como viene de SQLite (Guid y fecha como texto)
-        private sealed class NotificacionRow
+        private class NotificacionRow
         {
-            public string Id { get; init; } = string.Empty;
-            public string UsuarioId { get; init; } = string.Empty;
-            public string Mensaje { get; init; } = string.Empty;
-            public string Tipo { get; init; } = string.Empty;
-            public string Estado { get; init; } = string.Empty;
-            public string FechaEnvio { get; init; } = string.Empty;
+            public string Id { get; set; } = string.Empty;
+            public string UsuarioId { get; set; } = string.Empty;
+            public string Mensaje { get; set; } = string.Empty;
+            public string Tipo { get; set; } = string.Empty;
+            public string Estado { get; set; } = string.Empty;
+            public string FechaEnvio { get; set; } = string.Empty;
 
-            public Notificacion ToEntity() => new()
+            public Notificacion ToEntity()
             {
-                Id = Guid.Parse(Id),
-                UsuarioId = Guid.Parse(UsuarioId),
-                Mensaje = Mensaje,
-                Tipo = Tipo,
-                Estado = Estado,
-                FechaEnvio = DateTime.Parse(FechaEnvio, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)
-            };
+                var notificacion = new Notificacion();
+                notificacion.Id = Guid.Parse(Id);
+                notificacion.UsuarioId = Guid.Parse(UsuarioId);
+                notificacion.Mensaje = Mensaje;
+                notificacion.Tipo = Tipo;
+                notificacion.Estado = Estado;
+                notificacion.FechaEnvio = DateTime.Parse(FechaEnvio, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                return notificacion;
+            }
         }
     }
 }

@@ -42,7 +42,12 @@ namespace Products.API.Data
             using var conn = CreateConnection();
             var row = await conn.QuerySingleOrDefaultAsync<ProductRow>(
                 $"{SelectColumns} WHERE id = @id", new { id = id.ToString() });
-            return row?.ToEntity();
+            if (row == null)
+            {
+                return null;
+            }
+
+            return row.ToEntity();
         }
 
         // ── CREATE ────────────────────────────────────────────────────────────
@@ -80,38 +85,43 @@ namespace Products.API.Data
             return rows > 0;
         }
 
-        private static object ToParameters(Producto p) => new
+        private static object ToParameters(Producto p)
         {
-            Id = p.Id.ToString(),
-            p.Nombre,
-            p.Descripcion,
-            Precio = (double)p.Precio,
-            p.Stock,
-            p.Categoria,
-            FechaCreacion = p.FechaCreacion.ToString("o", CultureInfo.InvariantCulture)
-        };
+            return new
+            {
+                Id = p.Id.ToString(),
+                Nombre = p.Nombre,
+                Descripcion = p.Descripcion,
+                Precio = (double)p.Precio,
+                Stock = p.Stock,
+                Categoria = p.Categoria,
+                FechaCreacion = p.FechaCreacion.ToString("o", CultureInfo.InvariantCulture)
+            };
+        }
 
         // Fila tal como viene de SQLite (Guid y fecha como texto)
-        private sealed class ProductRow
+        private class ProductRow
         {
-            public string Id { get; init; } = string.Empty;
-            public string Nombre { get; init; } = string.Empty;
-            public string? Descripcion { get; init; }
-            public double Precio { get; init; }
-            public long Stock { get; init; }
-            public string Categoria { get; init; } = string.Empty;
-            public string FechaCreacion { get; init; } = string.Empty;
+            public string Id { get; set; } = string.Empty;
+            public string Nombre { get; set; } = string.Empty;
+            public string? Descripcion { get; set; }
+            public double Precio { get; set; }
+            public long Stock { get; set; }
+            public string Categoria { get; set; } = string.Empty;
+            public string FechaCreacion { get; set; } = string.Empty;
 
-            public Producto ToEntity() => new()
+            public Producto ToEntity()
             {
-                Id = Guid.Parse(Id),
-                Nombre = Nombre,
-                Descripcion = Descripcion,
-                Precio = (decimal)Precio,
-                Stock = (int)Stock,
-                Categoria = Categoria,
-                FechaCreacion = DateTime.Parse(FechaCreacion, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)
-            };
+                var producto = new Producto();
+                producto.Id = Guid.Parse(Id);
+                producto.Nombre = Nombre;
+                producto.Descripcion = Descripcion;
+                producto.Precio = (decimal)Precio;
+                producto.Stock = (int)Stock;
+                producto.Categoria = Categoria;
+                producto.FechaCreacion = DateTime.Parse(FechaCreacion, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                return producto;
+            }
         }
     }
 }

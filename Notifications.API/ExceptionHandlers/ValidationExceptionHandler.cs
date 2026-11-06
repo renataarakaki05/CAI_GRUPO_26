@@ -1,34 +1,41 @@
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Notifications.API.Exceptions;
 
 namespace Notifications.API.ExceptionHandlers
 {
-    public class ValidationExceptionHandler(ILogger<ValidationExceptionHandler> logger) : IExceptionHandler
+    public class ValidationExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<ValidationExceptionHandler> _logger;
+
+        public ValidationExceptionHandler(ILogger<ValidationExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
+
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
         {
             string errorCode;
             string errorMessage;
 
-            switch (exception)
+            if (exception is ValidationException)
             {
                 // Datos que no cumplen las validaciones del DTO (los lanza NotificacionService)
-                case ValidationException ex:
-                    errorCode = ex.ErrorCode;
-                    errorMessage = ex.Message;
-                    break;
-
+                var ex = (ValidationException)exception;
+                errorCode = ex.ErrorCode;
+                errorMessage = ex.Message;
+            }
+            else if (exception is BadHttpRequestException)
+            {
                 // Body vacío o JSON mal formado (lo lanza ASP.NET Core antes de llegar al endpoint)
-                case BadHttpRequestException:
-                    errorCode = ErrorCodes.NTF_002;
-                    errorMessage = "Los datos de la notificación son inválidos: el cuerpo de la request falta o no es un JSON válido.";
-                    break;
-
-                default:
-                    return false;
+                errorCode = ErrorCodes.NTF_002;
+                errorMessage = "Los datos de la notificación son inválidos: el cuerpo de la request falta o no es un JSON válido.";
+            }
+            else
+            {
+                return false;
             }
 
-            logger.LogWarning("{ErrorCode} {ErrorMessage}", errorCode, errorMessage);
+            _logger.LogWarning("{ErrorCode} {ErrorMessage}", errorCode, errorMessage);
 
             await ErrorResponseWriter.WriteAsync(context,
                 status: StatusCodes.Status400BadRequest,
