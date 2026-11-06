@@ -17,26 +17,29 @@ namespace Notifications.API.Swagger
     // siguiendo los contratos de la sección 4.5 de la consigna.
     public class ErrorExamplesOperationFilter : IOperationFilter
     {
-        private sealed record Example(string Type, string Title, string Detail, string Instance, string ErrorMessage);
+        private sealed record Example(string Type, string Title, string Detail, string ErrorMessage);
 
         private static readonly Dictionary<string, Example> Catalogo = new()
         {
             ["NTF-001"] = new("https://tools.ietf.org/html/rfc7231#section-6.5.4", "Not Found",
-                "El recurso solicitado no fue encontrado.", "/api/notifications/send",
+                "El recurso solicitado no fue encontrado.",
                 "El usuario destinatario no fue encontrado."),
             ["NTF-002"] = new("https://tools.ietf.org/html/rfc7231#section-6.5.1", "Bad Request",
-                "Los datos enviados no son válidos.", "/api/notifications/send",
+                "Los datos enviados no son válidos.",
                 "Los datos de la notificación son inválidos: El mensaje es requerido; El tipo debe ser Email, Push o SMS."),
             ["NTF-003"] = new("https://tools.ietf.org/html/rfc7231#section-6.5.4", "Not Found",
-                "El recurso solicitado no fue encontrado.", "/api/notifications/a1b2c3d4-0000-0000-0000-111122223333",
+                "El recurso solicitado no fue encontrado.",
                 "No se encontraron notificaciones para el usuario."),
             ["NTF-004"] = new("https://tools.ietf.org/html/rfc7231#section-6.6.1", "Internal Server Error",
-                "Ocurrió un error inesperado.", "/api/notifications/send",
+                "Ocurrió un error inesperado.",
                 "Error interno al procesar la notificación.")
         };
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
+            // El instance sale de la ruta del endpoint, porque un mismo código puede usarse en varios endpoints
+            var instance = "/" + context.ApiDescription.RelativePath?.Replace("{userId}", "a1b2c3d4-0000-0000-0000-111122223333");
+
             // En Minimal API el atributo se agrega con .WithMetadata(...) en cada endpoint
             foreach (var metadata in context.ApiDescription.ActionDescriptor.EndpointMetadata)
             {
@@ -49,7 +52,7 @@ namespace Notifications.API.Swagger
                     ["title"] = ex.Title,
                     ["status"] = attr.StatusCode,
                     ["detail"] = ex.Detail,
-                    ["instance"] = ex.Instance,
+                    ["instance"] = instance,
                     ["errorCode"] = attr.ErrorCode,
                     ["errorMessage"] = ex.ErrorMessage,
                     ["correlationId"] = "0f8fad5b-d9cb-469f-a165-70867728950e"
