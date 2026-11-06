@@ -3,7 +3,7 @@
 Trabajo Práctico de Arquitectura y Diseño de Software.
 Sistema de E-Commerce formado por 5 microservicios independientes, cada uno expuesto como una REST API en C# con .NET 10.
 
-Todos los microservicios se construyeron a partir del proyecto base de la cátedra (`MiniApi`): Minimal API, Dapper + SQLite para la persistencia, Serilog para los logs y HealthChecks.
+Todos los microservicios se construyeron a partir del proyecto base de la cátedra (`MiniApi`), con la estructura que pide la consigna: Controllers y Services, Dapper + SQLite para la persistencia, Serilog para los logs y HealthChecks.
 
 ## Integrantes
 
@@ -250,20 +250,21 @@ Cada request recibe un `X-Correlation-Id` único (o reutiliza el que llega en el
 
 ## Estructura de cada microservicio
 
-Todos los servicios siguen la misma estructura, tomada del `MiniApi` de la cátedra:
+Todos los servicios siguen la misma estructura, basada en la sección 6 de la consigna y en el `MiniApi` de la cátedra:
 
 ```
 Products.API/
   ├── Clients/             # Llamadas HTTP a otros microservicios
+  ├── Controllers/         # Definición de los endpoints
   ├── Data/                # DatabaseInitializer y repositorio (Dapper + SQLite)
   ├── DTOs/                # Request y Response DTOs
   ├── Exceptions/          # ErrorCodes, NotFoundException, BusinessRuleException, ValidationException
   ├── ExceptionHandlers/   # Un IExceptionHandler por tipo de excepción
-  ├── Extensions/          # Logging, servicios, middleware y endpoints
-  │   └── Endpoints/       # Definición de los endpoints (Minimal API)
+  ├── Extensions/          # Logging, servicios, middleware y registro de los controllers
   ├── HealthChecks/        # SqliteHealthCheck y ApiStatusCheck
   ├── Middleware/          # AuditMiddleware y CorrelationIdMiddleware
   ├── Models/              # Entidades del dominio
+  ├── Services/            # Lógica de negocio
   ├── Swagger/             # Ejemplos de error para Swagger
   ├── logs/                # Archivos de log de Serilog
   └── Program.cs
