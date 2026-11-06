@@ -226,7 +226,7 @@ Las respuestas nunca incluyen el stack trace. En `appsettings.Development.json` 
 
 | errorCode | HTTP | errorMessage | Cuándo se devuelve |
 |---|---|---|---|
-| NTF-001 | 404 | Usuario no encontrado. | POST cuando el UsuarioId no existe en Users.API. |
+| NTF-001 | 404 | El usuario destinatario no fue encontrado. | POST cuando el UsuarioId no existe en Users.API. |
 | NTF-002 | 400 | Los datos de la notificación son inválidos. | POST con campos faltantes o tipo no reconocido. |
 | NTF-003 | 404 | No se encontraron notificaciones para el usuario. | GET cuando el userId no tiene notificaciones registradas. |
 | NTF-004 | 500 | Error interno al procesar la notificación. | Error inesperado en servicio o persistencia. |
@@ -276,8 +276,8 @@ Capturas de Swagger UI mostrando ejemplos de response de error con `errorCode` y
 
 | Servicio | Captura |
 |---|---|
-| Products.API | Pendiente |
+| Products.API | [GET lista](docs/products-get-lista.png) · POST [1](docs/products-post-1.png) [2](docs/products-post-2.png) · GET por ID [1](docs/products-get-id-1.png) [2](docs/products-get-id-2.png) · PUT [1](docs/products-put-1.png) [2](docs/products-put-2.png) · [DELETE](docs/products-delete.png) |
 | Users.API | Pendiente |
 | Orders.API | Pendiente |
 | Cart.API | Pendiente |
-| Notifications.API | Pendiente |
+| Notifications.API | POST [1](docs/notifications-post-1.png) [2](docs/notifications-post-2.png) · GET [1](docs/notifications-get-1.png) [2](docs/notifications-get-2.png) |
