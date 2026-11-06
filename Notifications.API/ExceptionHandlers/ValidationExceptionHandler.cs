@@ -19,14 +19,14 @@ namespace Notifications.API.ExceptionHandlers
 
             if (exception is ValidationException)
             {
-                // Datos que no cumplen las validaciones del DTO (los lanzan los endpoints)
+                // Datos que no cumplen las validaciones del DTO (los lanza NotificacionService)
                 var ex = (ValidationException)exception;
                 errorCode = ex.ErrorCode;
                 errorMessage = ex.Message;
             }
             else if (exception is BadHttpRequestException)
             {
-                // Body vacío o JSON mal formado (lo lanza ASP.NET Core antes de llegar al endpoint)
+                // Request que ASP.NET Core rechaza antes de llegar al controller
                 errorCode = ErrorCodes.NTF_002;
                 errorMessage = "Los datos de la notificación son inválidos: el cuerpo de la request falta o no es un JSON válido.";
             }

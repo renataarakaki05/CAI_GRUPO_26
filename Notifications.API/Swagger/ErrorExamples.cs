@@ -7,6 +7,7 @@ namespace Notifications.API.Swagger
     /// <summary>
     /// Marca un endpoint con un posible error del catálogo para que Swagger muestre su ejemplo.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class ErrorExampleAttribute : Attribute
     {
         public int StatusCode { get; }
@@ -61,7 +62,7 @@ namespace Notifications.API.Swagger
             var instance = "/" + context.ApiDescription.RelativePath;
             instance = instance.Replace("{userId}", "a1b2c3d4-0000-0000-0000-111122223333");
 
-            // En Minimal API el atributo se agrega con .WithMetadata(...) en cada endpoint
+            // Cada acción del controller se marca con [ErrorExample(...)]
             foreach (var metadata in context.ApiDescription.ActionDescriptor.EndpointMetadata)
             {
                 var attr = metadata as ErrorExampleAttribute;

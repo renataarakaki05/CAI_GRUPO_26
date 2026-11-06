@@ -1,13 +1,11 @@
-using Notifications.API.Extensions.Endpoints;
-
-namespace Notifications.API.Extensions;
+﻿namespace Notifications.API.Extensions;
 
 // ALUMNOS: exposicion de todos los endpoints
 public static class EndpointsExtensions
 {
     public static void MapAppEndpoints(this WebApplication app)
     {
-        // ALUMNOS: se agregan
-        app.MapNotificacionEndpoints();
+        // Registra las rutas de la carpeta Controllers
+        app.MapControllers();
     }
 }

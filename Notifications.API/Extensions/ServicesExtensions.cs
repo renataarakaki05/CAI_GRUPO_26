@@ -1,10 +1,10 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Routing;
 using Notifications.API.Clients;
 using Notifications.API.Data;
 using Notifications.API.ExceptionHandlers;
 using Notifications.API.HealthChecks;
 using Notifications.API.Middleware;
+using Notifications.API.Services;
 using Notifications.API.Swagger;
 
 namespace Notifications.API.Extensions
@@ -15,6 +15,7 @@ namespace Notifications.API.Extensions
         {
             services.AddSingleton<DatabaseInitializer>();
             services.AddScoped<NotificacionRepository>();
+            services.AddScoped<NotificacionService>();
 
             // Manejo de errores: del más específico al genérico (Apéndice B)
             services.AddExceptionHandler<NotFoundExceptionHandler>();
@@ -22,8 +23,9 @@ namespace Notifications.API.Extensions
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
 
-            // Un body mal formado lanza excepción en todos los entornos → ValidationExceptionHandler (NTF-002)
-            services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
+            // Se apaga el 400 automático de [ApiController]: la validación la hace NotificacionService con NTF-002
+            services.AddControllers()
+                .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
             // HTTP hacia Users.API (IHttpClientFactory), propagando el X-Correlation-Id
             services.AddHttpContextAccessor();
