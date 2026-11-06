@@ -19,7 +19,7 @@ namespace Notifications.API.ExceptionHandlers
 
             if (exception is ValidationException)
             {
-                // Datos que no cumplen las validaciones del DTO (los lanza NotificacionService)
+                // Datos que no cumplen las validaciones del DTO (los lanzan los endpoints)
                 var ex = (ValidationException)exception;
                 errorCode = ex.ErrorCode;
                 errorMessage = ex.Message;

@@ -5,7 +5,6 @@ using Notifications.API.Data;
 using Notifications.API.ExceptionHandlers;
 using Notifications.API.HealthChecks;
 using Notifications.API.Middleware;
-using Notifications.API.Services;
 using Notifications.API.Swagger;
 
 namespace Notifications.API.Extensions
@@ -16,7 +15,6 @@ namespace Notifications.API.Extensions
         {
             services.AddSingleton<DatabaseInitializer>();
             services.AddScoped<NotificacionRepository>();
-            services.AddScoped<NotificacionService>();
 
             // Manejo de errores: del más específico al genérico (Apéndice B)
             services.AddExceptionHandler<NotFoundExceptionHandler>();

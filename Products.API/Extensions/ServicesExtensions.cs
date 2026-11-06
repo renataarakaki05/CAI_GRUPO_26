@@ -5,7 +5,6 @@ using Products.API.Data;
 using Products.API.ExceptionHandlers;
 using Products.API.HealthChecks;
 using Products.API.Middleware;
-using Products.API.Services;
 using Products.API.Swagger;
 
 namespace Products.API.Extensions
@@ -16,7 +15,6 @@ namespace Products.API.Extensions
         {
             services.AddSingleton<DatabaseInitializer>();
             services.AddScoped<ProductoRepository>();
-            services.AddScoped<ProductoService>();
 
             // Manejo de errores: del más específico al genérico (Apéndice B)
             services.AddExceptionHandler<NotFoundExceptionHandler>();

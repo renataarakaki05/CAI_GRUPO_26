@@ -7,7 +7,6 @@ namespace Products.API.Middleware
     public class CorrelationIdMiddleware
     {
         public const string HeaderName = "X-Correlation-Id";
-        internal const string ItemKey = "CorrelationId";
 
         private readonly RequestDelegate _next;
         private readonly ILogger<CorrelationIdMiddleware> _logger;
@@ -25,7 +24,7 @@ namespace Products.API.Middleware
                 ? value.ToString()
                 : Guid.NewGuid().ToString();
 
-            context.Items[ItemKey] = correlationId;
+            context.TraceIdentifier = correlationId;
             context.Response.OnStarting(() =>
             {
                 context.Response.Headers[HeaderName] = correlationId;
@@ -44,19 +43,6 @@ namespace Products.API.Middleware
         }
     }
 
-    public static class CorrelationIdExtensions
-    {
-        public static string? GetCorrelationId(this HttpContext context)
-        {
-            if (context.Items.TryGetValue(CorrelationIdMiddleware.ItemKey, out var id))
-            {
-                return id as string;
-            }
-
-            return null;
-        }
-    }
-
     // Propaga el Correlation ID en las llamadas HTTP salientes (IHttpClientFactory)
     public class CorrelationIdDelegatingHandler : DelegatingHandler
     {
@@ -72,10 +58,9 @@ namespace Products.API.Middleware
             var context = _accessor.HttpContext;
             if (context != null)
             {
-                var correlationId = context.GetCorrelationId();
-                if (correlationId != null && !request.Headers.Contains(CorrelationIdMiddleware.HeaderName))
+                if (!request.Headers.Contains(CorrelationIdMiddleware.HeaderName))
                 {
-                    request.Headers.Add(CorrelationIdMiddleware.HeaderName, correlationId);
+                    request.Headers.Add(CorrelationIdMiddleware.HeaderName, context.TraceIdentifier);
                 }
             }
 

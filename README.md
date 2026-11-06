@@ -264,7 +264,6 @@ Products.API/
   ├── HealthChecks/        # SqliteHealthCheck y ApiStatusCheck
   ├── Middleware/          # AuditMiddleware y CorrelationIdMiddleware
   ├── Models/              # Entidades del dominio
-  ├── Services/            # Lógica de negocio
   ├── Swagger/             # Ejemplos de error para Swagger
   ├── logs/                # Archivos de log de Serilog
   └── Program.cs

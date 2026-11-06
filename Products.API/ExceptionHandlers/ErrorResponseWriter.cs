@@ -1,5 +1,3 @@
-using Products.API.Middleware;
-
 namespace Products.API.ExceptionHandlers
 {
     // Arma la respuesta de error con el contrato de la sección 3.1 de la consigna.
@@ -26,7 +24,7 @@ namespace Products.API.ExceptionHandlers
                 ["instance"] = context.Request.Path.Value,
                 ["errorCode"] = errorCode,
                 ["errorMessage"] = errorMessage,
-                ["correlationId"] = context.GetCorrelationId()
+                ["correlationId"] = context.TraceIdentifier
             };
 
             // Solo en Development (ver appsettings.Development.json); nunca se manda el stack trace
