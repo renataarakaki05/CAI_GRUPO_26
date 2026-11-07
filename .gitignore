@@ -47,3 +47,6 @@ packages/
 # =========================
 appsettings.Development.json
 appsettings.Local.json
+
+# Bases de datos SQLite (se crean solas al correr la API)
+*.db
