@@ -11,6 +11,7 @@ namespace Users.API.Services
     // Si algo sale mal tira una excepción y los handlers de ExceptionHandlers arman la respuesta
     public class UsuarioService
     {
+        private const int MaxIntentosFallidos = 3; // A los 3 intentos fallidos seguidos se bloquea la cuenta
         private readonly UsuarioRepository _repo;
         private readonly ILogger<UsuarioService> _logger;
 
@@ -54,15 +55,76 @@ namespace Users.API.Services
                 usuario.Email, usuario.FechaRegistro, usuario.Activo);
         }
 
-        // Nunca guardamos la contraseña tal cual y sino su hash SHA256
-        private static string HashPassword(string password)
+
+        // LOGIN
+        public async Task<LoginResponseDto> LoginAsync(LoginDto request)
+        {
+            // Si falta el email o la contraseña tira error USR-002
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                throw new ValidationException(ErrorCodes.USR_002,
+                    "Los datos del usuario son inválidos: el email y la contraseña son requeridos.");
+            }
+
+            string email = request.Email.Trim().ToLower();
+            var usuario = await _repo.GetByEmailAsync(email);
+
+            if (usuario == null) // Si el email no existe va lo mismo que con contraseña incorrecta
+            {
+                throw new BusinessRuleException(ErrorCodes.USR_003, "Credenciales incorrectas.");
+            }
+
+            if (!usuario.Activo)
+            {
+                LanzarErrorDeBloqueo(usuario); // Si ya está bloqueado no lo dejo entrar, aunque la contraseña sea correcta
+            }
+
+            if (usuario.PasswordHash != HashPassword(request.Password))  // Si la contraseña es incorrecta, sumamos un intento fallido
+            {
+                usuario.IntentosFallidos = usuario.IntentosFallidos + 1;
+
+                if (usuario.IntentosFallidos >= MaxIntentosFallidos) // Al tercer intento se bloquea la cuenta
+                {
+                    usuario.Activo = false;
+                    await _repo.UpdateAsync(usuario);
+                    _logger.LogWarning("Usuario {UsuarioId} bloqueado por {Intentos} intentos fallidos",
+                        usuario.Id, usuario.IntentosFallidos);
+                    LanzarErrorDeBloqueo(usuario);
+                }
+
+                await _repo.UpdateAsync(usuario);
+                throw new BusinessRuleException(ErrorCodes.USR_003, "Credenciales incorrectas.");
+            }
+
+            usuario.IntentosFallidos = 0; // Cuando el loggin es correcto los intentos fallidos vuelven a 0
+            await _repo.UpdateAsync(usuario);
+            _logger.LogInformation("Usuario {UsuarioId} inició sesión", usuario.Id);
+
+            return new LoginResponseDto(usuario.Id, usuario.Nombre, usuario.Apellido, usuario.Email);
+        }
+
+        // Elige qué error de bloqueo mostrar:
+        // con 3 o más intentos fallidos se bloqueó solo: USR-004
+        // con menos, lo bloquearon a mano en la base por fraude: USR-005
+        private static void LanzarErrorDeBloqueo(Usuario usuario)
+        {
+            if (usuario.IntentosFallidos >= MaxIntentosFallidos)
+            {
+                throw new BusinessRuleException(ErrorCodes.USR_004,
+                    "Usuario bloqueado por demasiados intentos fallidos.");
+            }
+
+            throw new BusinessRuleException(ErrorCodes.USR_005,
+                "Usuario bloqueado por detección de fraude.");
+        }
+
+        private static string HashPassword(string password) // Nunca guardamos la contraseña tal cual y sino su hash SHA256
         {
             byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
             return Convert.ToHexString(bytes);
         }
 
-        // Revisa los datos del registro. Si hay errores tira USR-002 con todos juntos
-        private static void Validar(RegistrarUsuarioDto request)
+        private static void Validar(RegistrarUsuarioDto request)  // Revisa los datos del registro. Si hay errores tira USR-002 con todos juntos
         {
             var errores = new List<string>();
 
