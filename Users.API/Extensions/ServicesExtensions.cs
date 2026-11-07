@@ -1,0 +1,40 @@
+using Users.API.Data;
+using Users.API.ExceptionHandlers;
+using Users.API.HealthChecks;
+using Users.API.Services;
+
+namespace Users.API.Extensions
+{
+    public static class ServicesExtensions
+    {
+        public static void AddAppServices(this IServiceCollection services)
+        {
+            services.AddSingleton<DatabaseInitializer>();
+            services.AddScoped<UsuarioRepository>();
+            services.AddScoped<UsuarioService>();
+
+            // Handlers de errores: primero los específicos y al final el general
+            services.AddExceptionHandler<NotFoundExceptionHandler>();
+            services.AddExceptionHandler<BusinessRuleExceptionHandler>();
+            services.AddExceptionHandler<ValidationExceptionHandler>();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
+
+            // Si el JSON viene mal escrito tira error
+            services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+
+            services.AddHealthChecks()
+                .AddCheck<SqliteHealthCheck>("sqlite-db", tags: ["database"])
+                .AddCheck<ApiStatusCheck>("api-status", tags: ["api"]);
+
+            services.AddHealthChecksUI(setup =>
+            {
+                setup.SetEvaluationTimeInSeconds(600);
+                setup.AddHealthCheckEndpoint("Users.API", "/health");
+            }).AddInMemoryStorage();
+        }
+    }
+}
