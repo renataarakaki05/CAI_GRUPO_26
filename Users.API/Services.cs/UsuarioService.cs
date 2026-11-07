@@ -103,6 +103,21 @@ namespace Users.API.Services
             return new LoginResponseDto(usuario.Id, usuario.Nombre, usuario.Apellido, usuario.Email);
         }
 
+
+        // BUSCAR POR ID (lo usan Orders.API y Notifications.API)
+        public async Task<UsuarioDto> GetByIdAsync(Guid id)
+        {
+            var usuario = await _repo.GetByIdAsync(id);
+
+            if (usuario == null) // Si no existe tira 404 (URS-007)
+            {
+                throw new NotFoundException(ErrorCodes.USR_007, "Usuario no encontrado.");
+            }
+
+            return new UsuarioDto(usuario.Id, usuario.Nombre, usuario.Apellido,
+                usuario.Email, usuario.FechaRegistro, usuario.Activo);
+        }
+
         // Elige qué error de bloqueo mostrar:
         // con 3 o más intentos fallidos se bloqueó solo: USR-004
         // con menos, lo bloquearon a mano en la base por fraude: USR-005
