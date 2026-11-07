@@ -1,3 +1,4 @@
+using Users.API.Swagger;
 using Users.API.Data;
 using Users.API.ExceptionHandlers;
 using Users.API.HealthChecks;
@@ -24,7 +25,13 @@ namespace Users.API.Extensions
             services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
 
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(options =>
+            {
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; // Lee  comentarios XML de los DTOs
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+
+                options.OperationFilter<ErrorExamplesFilter>(); // Agrega ejemplos de error de cada endpoint
+            });
 
             services.AddHealthChecks()
                 .AddCheck<SqliteHealthCheck>("sqlite-db", tags: ["database"])
