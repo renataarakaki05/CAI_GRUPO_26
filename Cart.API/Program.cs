@@ -1,6 +1,7 @@
 using Cart.API.Clients;
 using Cart.API.Data;
 using Cart.API.ExceptionHandlers;
+using Cart.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 public partial class Program
@@ -31,6 +32,9 @@ public partial class Program
 
         // cliente http para consultar products.api (la url se configura en el constructor)
         builder.Services.AddHttpClient<ProductsClient>();
+
+        // la logica del carrito
+        builder.Services.AddScoped<CarritoService>();
 
         // Esto es para que Swagger pueda leer los endpoints y armar la página de prueba
         builder.Services.AddEndpointsApiExplorer();
