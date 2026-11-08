@@ -20,7 +20,7 @@ namespace Users.API.ExceptionHandlers
 
             // USR-001: el email ya existe
             int status = 409;
-            string type = "https://tools.ietf.org/html/rfc7231#section-6.5.8";
+            string type = "https://tools.ietf.org/html/rfc7231#section-6.5.9";
             string title = "Conflict";
             string detail = "Ya existe un recurso con esos datos.";
 
