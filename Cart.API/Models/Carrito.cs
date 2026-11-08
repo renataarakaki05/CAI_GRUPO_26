@@ -1,17 +1,16 @@
 namespace Cart.API.Models
 {
-    // El carrito de un usuario (en la consigna se llama Cart).
-    // Cada usuario tiene un solo carrito, así que no necesita Id propio: lo buscamos por UsuarioId.
+    // el carrito de un usuario, cada usuario tiene uno solo
+    // por eso no tiene id propio, lo buscamos por UsuarioId
     public class Carrito
     {
-        // De quién es el carrito
+        // de quien es el carrito
         public Guid UsuarioId { get; set; }
 
-        // Los productos que tiene adentro. Arranca vacío.
+        // los productos q tiene adentro, arranca vacio
         public List<CarritoItem> Items { get; set; } = new List<CarritoItem>();
 
-        // Cuándo se tocó por última vez (se actualiza en cada operación)
+        // ultima vez q se modifico
         public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
     }
 }
-    

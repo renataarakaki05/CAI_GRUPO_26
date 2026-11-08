@@ -1,12 +1,12 @@
 namespace Cart.API.Models
 {
-    // Un producto dentro del carrito (en la consigna se llama CartItem).
+    // un producto dentro del carrito
     public class CarritoItem
     {
-        // Qué producto es (el Id que tiene en Products.API)
+        // el id del producto en products.api
         public Guid ProductoId { get; set; }
 
-        // Cuántas unidades quiere. Tiene que ser mayor a 0 (eso lo chequea el servicio con CRT-004)
+        // cuantas unidades, tiene q ser mayor a 0 (si no CRT-004)
         public int Cantidad { get; set; }
     }
 }
