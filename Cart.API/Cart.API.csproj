@@ -9,9 +9,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="Cart.API.http" />
-  </ItemGroup>
+ 
 
   <!-- Mismos paquetes que el MiniApi de la cátedra -->
   <ItemGroup>
