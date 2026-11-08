@@ -20,6 +20,7 @@ namespace Orders.API.Controllers
         }
 
         // GET 
+        /// <summary>Listar órdenes (filtro opcional ?usuarioId=)</summary>
         [HttpGet]
         [ProducesResponseType(typeof(List<OrdenDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(string? usuarioId)
@@ -40,6 +41,7 @@ namespace Orders.API.Controllers
         }
 
         // GET by id
+        /// <summary>Obtener el detalle de una orden</summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(OrdenDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(string id)
@@ -49,6 +51,7 @@ namespace Orders.API.Controllers
         }
 
         // POST 
+        /// <summary>Crear una orden nueva</summary>
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(OrdenDto), StatusCodes.Status201Created)]
@@ -61,6 +64,7 @@ namespace Orders.API.Controllers
         }
 
         // PUT 
+        /// <summary>Actualizar el estado de una orden</summary>
         [HttpPut("{id}/status")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(EstadoActualizadoDto), StatusCodes.Status200OK)]
