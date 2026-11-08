@@ -19,7 +19,7 @@ Todos los microservicios se construyeron a partir del proyecto base de la cáted
 |---|---|---|---|
 | Products.API | 5101 | Catálogo de productos: alta, baja, modificación y consulta con filtros por categoría y nombre. | Terminado |
 | Users.API | 5102 | Registro y login de usuarios, con bloqueo tras 3 intentos fallidos. | Terminado |
-| Orders.API | 5103 | Creación de órdenes validando usuario, productos y stock; cambios de estado. | Pendiente |
+| Orders.API | 5103 | Creación de órdenes validando usuario, productos y stock; cambios de estado. | Terminado |
 | Cart.API | 5104 | Carrito de compras por usuario, validando productos y stock contra Products.API. | Pendiente |
 | Notifications.API | 5105 | Registro y envío simulado de notificaciones (Email, Push, SMS) a usuarios existentes. | Terminado |
 
@@ -128,7 +128,7 @@ Las respuestas de health checks devuelven el estado `Healthy`, `Degraded` o `Unh
 |---|---|---|---|
 | GET | `/api/orders` | Listar órdenes (filtro `?usuarioId=`) | 200, 500 |
 | GET | `/api/orders/{id}` | Obtener detalle de una orden | 200, 404, 500 |
-| POST | `/api/orders` | Crear nueva orden | 201, 400, 404, 409, 422, 500 |
+| POST | `/api/orders` | Crear nueva orden | 201, 400, 404, 422, 500 |
 | PUT | `/api/orders/{id}/status` | Actualizar estado de la orden | 200, 400, 404, 409, 500 |
 
 ### Cart.API (puerto 5104)
@@ -193,7 +193,7 @@ Las respuestas nunca incluyen el stack trace. En `appsettings.Development.json` 
 | errorCode | HTTP | errorMessage | Cuándo se devuelve |
 |---|---|---|---|
 | USR-001 | 409 | El email ya está registrado. | POST /register cuando el email ya existe. |
-| USR-002 | 400 | Los datos del usuario son inválidos. | POST /register con campos faltantes o formato incorrecto. |
+| USR-002 | 400 | Los datos del usuario son inválidos. | POST /register o /login con campos faltantes o formato incorrecto. |
 | USR-003 | 401 | Credenciales incorrectas. | POST /login cuando email o contraseña no coinciden. |
 | USR-004 | 403 | Usuario bloqueado por demasiados intentos fallidos. | POST /login con 3+ intentos fallidos acumulados. |
 | USR-005 | 403 | Usuario bloqueado por detección de fraude. | POST /login cuando el usuario fue bloqueado manualmente. |
@@ -205,7 +205,7 @@ Las respuestas nunca incluyen el stack trace. En `appsettings.Development.json` 
 | errorCode | HTTP | errorMessage | Cuándo se devuelve |
 |---|---|---|---|
 | ORD-001 | 404 | Orden no encontrada. | GET/PUT cuando el ID de orden no existe. |
-| ORD-002 | 400 | Los datos de la orden son inválidos. | POST con campos faltantes o lista de items vacía. |
+| ORD-002 | 400 | Los datos de la orden son inválidos. | POST con campos faltantes o lista de items vacía, o PUT /status con un estado inválido. |
 | ORD-003 | 404 | Usuario no encontrado al crear la orden. | POST cuando el UsuarioId no existe en Users.API. |
 | ORD-004 | 404 | Producto no encontrado al crear la orden. | POST cuando algún ProductoId no existe en Products.API. |
 | ORD-005 | 422 | Stock insuficiente para uno o más productos. | POST cuando la cantidad solicitada supera el stock disponible. |
@@ -278,6 +278,6 @@ Capturas de Swagger UI mostrando ejemplos de response de error con `errorCode` y
 |---|---|
 | Products.API | [GET lista](docs/products-get-lista.png) · POST [1](docs/products-post-1.png) [2](docs/products-post-2.png) · GET por ID [1](docs/products-get-id-1.png) [2](docs/products-get-id-2.png) · PUT [1](docs/products-put-1.png) [2](docs/products-put-2.png) · [DELETE](docs/products-delete.png) |
 | Users.API | Register [1](docs/users-register-1.png) [2](docs/users-register-2.png) · Login [1](docs/users-login-1.png) [2](docs/users-login-2.png) [3](docs/users-login-3.png) [4](docs/users-login-4.png) · GET por ID [1](docs/users-get-id-1.png) [2](docs/users-get-id-2.png) |
-| Orders.API | Pendiente |
+| Orders.API | [GET lista](docs/orders-get-lista.png) · POST [1](docs/orders-post-1.png) [2](docs/orders-post-2.png) [3](docs/orders-post-3.png) [4](docs/orders-post-4.png) · GET por ID [1](docs/orders-get-id-1.png) [2](docs/orders-get-id-2.png) · PUT [1](docs/orders-put-1.png) [2](docs/orders-put-2.png) [3](docs/orders-put-3.png) |
 | Cart.API | Pendiente |
 | Notifications.API | POST [1](docs/notifications-post-1.png) [2](docs/notifications-post-2.png) · GET [1](docs/notifications-get-1.png) [2](docs/notifications-get-2.png) |
