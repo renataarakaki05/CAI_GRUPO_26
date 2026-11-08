@@ -2,7 +2,9 @@ using Cart.API.Clients;
 using Cart.API.Data;
 using Cart.API.ExceptionHandlers;
 using Cart.API.Services;
+using Cart.API.Swagger;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 public partial class Program
 {
@@ -15,7 +17,7 @@ public partial class Program
         // usamo addControllers donde se guarda los endpoints
         builder.Services.AddControllers();
 
-        // Apagamos el 400 automático de ASP.NET: los datos los autovalidamos nosotros con CRT-004
+        // los datos los autovalidamos nosotros con CRT-004
         builder.Services.Configure<ApiBehaviorOptions>(ConfigurarValidacion);
 
         // El manjeo de errores buscar ir del mas especifico al mas general
@@ -30,7 +32,7 @@ public partial class Program
         builder.Services.AddSingleton<DatabaseInitializer>();
         builder.Services.AddScoped<CarritoRepository>();
 
-        // cliente http para consultar products.api (la url se configura en el constructor)
+        // cliente http para consultar products.api 
         builder.Services.AddHttpClient<ProductsClient>();
 
         // la logica del carrito
@@ -38,7 +40,7 @@ public partial class Program
 
         // Esto es para que Swagger pueda leer los endpoints y armar la página de prueba
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(ConfigurarSwagger);
 
         // Con todo configurado, armamos la app
         var app = builder.Build();
@@ -60,7 +62,7 @@ public partial class Program
             app.UseSwaggerUI();
         }
 
-        // Conecta las rutas (/api/cart/...) con los métodos de los Controllers
+        // Conecta las rutas  con los métodos de los Controllers
         app.MapControllers();
 
         // Prende la API y se queda escuchando pedidos
@@ -72,5 +74,14 @@ public partial class Program
     private static void ConfigurarValidacion(ApiBehaviorOptions options)
     {
         options.SuppressModelStateInvalidFilter = true;
+
+    }
+
+    // El swagger lee los comentarios del codigo y agrega los ejemplos de error
+    private static void ConfigurarSwagger(SwaggerGenOptions options)
+    {
+        var archivoXml = Path.Combine(AppContext.BaseDirectory, "Cart.API.xml");
+        options.IncludeXmlComments(archivoXml);
+        options.OperationFilter<ErrorExamplesOperationFilter>();
     }
 }
