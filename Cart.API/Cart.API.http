@@ -1,0 +1,76 @@
+@Cart.API_HostAddress = http://localhost:5104
+@Products.API_HostAddress = http://localhost:5101
+
+//usuario de prueba (cualquier guid sirve)
+@userId = a1b2c3d4-0000-0000-0000-111122223333
+
+//pegar aca el id del producto q devuelve el "Crear producto" de abajo
+@productoId = 3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+//Crear producto en Products.API (necesita products levantado) → copiar el id
+POST {{Products.API_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "nombre": "Notebook Dell XPS 15",
+  "descripcion": "Laptop 15 pulgadas",
+  "precio": 1500,
+  "stock": 10,
+  "categoria": "Electrónica"
+}
+
+###Carrito que no existe  404
+GET {{Cart.API_HostAddress}}/api/cart/{{userId}}
+
+### Agregar producto al carrito  200
+POST {{Cart.API_HostAddress}}/api/cart/{{userId}}/items
+Content-Type: application/json
+
+{
+  "productoId": "{{productoId}}",
+  "cantidad": 2
+}
+
+### Pedir mas de lo q hay en stock  422 
+POST {{Cart.API_HostAddress}}/api/cart/{{userId}}/items
+Content-Type: application/json
+
+{
+  "productoId": "{{productoId}}",
+  "cantidad": 100
+}
+
+### Cantidad 0  400 
+POST {{Cart.API_HostAddress}}/api/cart/{{userId}}/items
+Content-Type: application/json
+
+{
+  "productoId": "{{productoId}}",
+  "cantidad": 0
+}
+
+### Producto que no existe en Products  404 
+POST {{Cart.API_HostAddress}}/api/cart/{{userId}}/items
+Content-Type: application/json
+
+{
+  "productoId": "00000000-0000-0000-0000-000000000001",
+  "cantidad": 1
+}
+
+### Cambiar la cantidad  200
+PUT {{Cart.API_HostAddress}}/api/cart/{{userId}}/items/{{productoId}}
+Content-Type: application/json
+
+{
+  "cantidad": 5
+}
+
+### Ver el carrito  200
+GET {{Cart.API_HostAddress}}/api/cart/{{userId}}
+
+### Quitar el producto  204
+DELETE {{Cart.API_HostAddress}}/api/cart/{{userId}}/items/{{productoId}}
+
+### Vaciar el carrito  204
+DELETE {{Cart.API_HostAddress}}/api/cart/{{userId}}
