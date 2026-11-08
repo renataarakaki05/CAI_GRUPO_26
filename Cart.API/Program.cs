@@ -1,15 +1,27 @@
-using System.Runtime.InteropServices;
+using Cart.API.ExceptionHandlers;
+using Microsoft.AspNetCore.Mvc;
 
 public partial class Program
 {
-    // Acá arranca la API, es lo primero que se ejecuta
+   
     private static void Main(string[] args)
     {
-        // El builder es como la "caja de herramientas": acá le decimos qué cosas va a usar la API
+        // Cosas q vamos a usar en la API
         var builder = WebApplication.CreateBuilder(args);
 
-        // Le avisamos que vamos a usar Controllers (las clases donde van los endpoints)
+        // usamo addControllers donde se guarda los endpoints
         builder.Services.AddControllers();
+
+        // Apagamos el 400 automático de ASP.NET: los datos los autovalidamos nosotros con CRT-004
+        builder.Services.Configure<ApiBehaviorOptions>(ConfigurarValidacion);
+
+        // El manjeo de errores buscar ir del mas especifico al mas general
+        // Cuando salta una excepción, .NET prueba los handlers en este orden hasta que uno la agarra.
+        builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
+        builder.Services.AddExceptionHandler<BusinessRuleExceptionHandler>();
+        builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
 
         // Esto es para que Swagger pueda leer los endpoints y armar la página de prueba
         builder.Services.AddEndpointsApiExplorer();
@@ -17,6 +29,9 @@ public partial class Program
 
         // Con todo configurado, armamos la app
         var app = builder.Build();
+
+        // Activa los handlers de errores que registramos arriba
+        app.UseExceptionHandler();
 
         // Swagger solo se muestra cuando estamos desarrollando, no en producción
         if (app.Environment.IsDevelopment())
@@ -30,5 +45,12 @@ public partial class Program
 
         // Prende la API y se queda escuchando pedidos
         app.Run();
+    }
+
+
+    // para q asp.net no corte con su 400 y el error lo manejemos nosotros
+    private static void ConfigurarValidacion(ApiBehaviorOptions options)
+    {
+        options.SuppressModelStateInvalidFilter = true;
     }
 }
