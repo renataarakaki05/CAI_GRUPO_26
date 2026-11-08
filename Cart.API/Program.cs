@@ -1,3 +1,4 @@
+using Cart.API.Clients;
 using Cart.API.Data;
 using Cart.API.ExceptionHandlers;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,9 @@ public partial class Program
         // base de datos: el q crea las tablas y el repositorio con las consultas
         builder.Services.AddSingleton<DatabaseInitializer>();
         builder.Services.AddScoped<CarritoRepository>();
+
+        // cliente http para consultar products.api (la url se configura en el constructor)
+        builder.Services.AddHttpClient<ProductsClient>();
 
         // Esto es para que Swagger pueda leer los endpoints y armar la página de prueba
         builder.Services.AddEndpointsApiExplorer();
