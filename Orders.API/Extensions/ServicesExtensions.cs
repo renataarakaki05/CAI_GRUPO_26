@@ -4,6 +4,7 @@ using Orders.API.ExceptionHandlers;
 using Orders.API.HealthChecks;
 using Orders.API.Middleware;
 using Orders.API.Services;
+using Orders.API.Swagger;
 
 namespace Orders.API.Extensions
 {
@@ -38,8 +39,7 @@ namespace Orders.API.Extensions
             }).AddHttpMessageHandler<CorrelationIdHandler>();
 
             // Controllers. Los datos los validamos nosotros en el servicio (error ORD-002)
-            services.AddControllers()
-                .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+            services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
