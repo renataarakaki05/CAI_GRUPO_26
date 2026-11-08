@@ -21,8 +21,8 @@ namespace Users.API.Extensions
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
 
-            // Si el JSON viene mal escrito tira error
-            services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
+            // Controllers, los datos los validamos nosotros en el servicio, USR-002
+            services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
