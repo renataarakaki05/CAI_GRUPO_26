@@ -1,3 +1,4 @@
+using Cart.API.Data;
 using Cart.API.ExceptionHandlers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,12 +24,23 @@ public partial class Program
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
 
+        // base de datos: el q crea las tablas y el repositorio con las consultas
+        builder.Services.AddSingleton<DatabaseInitializer>();
+        builder.Services.AddScoped<CarritoRepository>();
+
         // Esto es para que Swagger pueda leer los endpoints y armar la página de prueba
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
         // Con todo configurado, armamos la app
         var app = builder.Build();
+
+        // creamos las tablas si no existen
+        using (var scope = app.Services.CreateScope())
+        {
+            var inicializador = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+            inicializador.Initialize();
+        }
 
         // Activa los handlers de errores que registramos arriba
         app.UseExceptionHandler();
