@@ -1,3 +1,4 @@
+using Orders.API.Clients;
 using Orders.API.Data;
 using Orders.API.ExceptionHandlers;
 
@@ -13,6 +14,16 @@ builder.Services.AddExceptionHandler<BusinessRuleExceptionHandler>();
 builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+// Clientes para llamar a Users.API y Products.API
+builder.Services.AddHttpClient<UsersClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Services:UsersApi"] ?? "http://localhost:5102");
+});
+builder.Services.AddHttpClient<ProductsClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Services:ProductsApi"] ?? "http://localhost:5101");
+});
 
 var app = builder.Build();
 
