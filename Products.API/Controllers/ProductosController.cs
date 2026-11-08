@@ -9,6 +9,9 @@ namespace Products.API.Controllers
 {
  
     // Endpoints de productos. 
+    /// <summary>
+    /// Endpoints de productos. La lógica de negocio está en ProductoService.
+    /// </summary>
     [ApiController]
     [Route("api/products")]
     [Tags("Products")]
@@ -22,6 +25,7 @@ namespace Products.API.Controllers
             _service = service;
         }
 
+        /// <summary>Listar productos (filtro ?categoria= y ?nombre=)</summary>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ProductoDto>), StatusCodes.Status200OK)]
         [ErrorExample(StatusCodes.Status500InternalServerError, ErrorCodes.PRD_005)]
@@ -31,6 +35,7 @@ namespace Products.API.Controllers
             return Ok(productos);
         }
 
+        /// <summary>Obtener producto por ID</summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status200OK)]
         [ErrorExample(StatusCodes.Status404NotFound, ErrorCodes.PRD_001)]
@@ -42,6 +47,7 @@ namespace Products.API.Controllers
         }
 
 
+        /// <summary>Crear nuevo producto</summary>
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status201Created)]
@@ -55,6 +61,7 @@ namespace Products.API.Controllers
         }
 
 
+        /// <summary>Actualizar producto existente</summary>
         [HttpPut("{id}")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status200OK)]
@@ -68,6 +75,7 @@ namespace Products.API.Controllers
         }
 
 
+        /// <summary>Eliminar producto</summary>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ErrorExample(StatusCodes.Status404NotFound, ErrorCodes.PRD_001)]

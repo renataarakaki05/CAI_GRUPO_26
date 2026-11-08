@@ -10,6 +10,9 @@ namespace Notifications.API.Controllers
   
     //endpoints de notificaciones. La lógica de negocio está en NotificacionService.
     
+    /// <summary>
+    /// Endpoints de notificaciones. La lógica de negocio está en NotificacionService.
+    /// </summary>
     [ApiController]
     [Route("api/notifications")]
     [Tags("Notifications")]
@@ -24,6 +27,7 @@ namespace Notifications.API.Controllers
         }
 
         // registrar y simular envío de notificación
+        /// <summary>Registrar y simular envío de notificación</summary>
         [HttpPost("send")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(NotificacionDto), StatusCodes.Status201Created)]
@@ -37,6 +41,7 @@ namespace Notifications.API.Controllers
         }
 
         //listar notificaciones de un usuario
+        /// <summary>Listar notificaciones de un usuario</summary>
         [HttpGet("{userId}")]
         [ProducesResponseType(typeof(IEnumerable<NotificacionDto>), StatusCodes.Status200OK)]
         [ErrorExample(StatusCodes.Status404NotFound, ErrorCodes.NTF_003)]
