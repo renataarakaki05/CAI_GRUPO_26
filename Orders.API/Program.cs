@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddScoped<OrdenRepository>();
 
-// Servicio de órdenes
+// Servicio de ordenes
 builder.Services.AddScoped<OrdenService>();
 
 // Handlers de errores: primero los especificos y al final el general
