@@ -8,6 +8,11 @@ namespace Orders.API.Services
 {
     public class OrdenService
     {
+        private static readonly List<string> EstadosValidos = new List<string>
+        {
+            "Pendiente", "Confirmada", "Enviada", "Entregada", "Cancelada"
+        };
+
         private readonly OrdenRepository _repo;
         private readonly UsersClient _usersClient;
         private readonly ProductsClient _productsClient;
@@ -97,6 +102,52 @@ namespace Orders.API.Services
             }
 
             return ConvertirADto(orden);
+        }
+
+        // CAMBIAR ESTADO
+        public async Task<EstadoActualizadoDto> ActualizarEstadoAsync(Guid id, ActualizarEstadoDto request)
+        {
+            // El estado nuevo tiene que ser uno de los permitidos si no, error ORD-002
+            if (string.IsNullOrWhiteSpace(request.Estado) || !EstadosValidos.Contains(request.Estado))
+            {
+                throw new ValidationException(ErrorCodes.ORD_002,
+                    $"Los datos de la orden son inválidos: el estado tiene que ser {string.Join(", ", EstadosValidos)}.");
+            }
+
+            // La orden tiene que existir si no, error ORD-001
+            var orden = await _repo.GetByIdAsync(id);
+            if (orden == null)
+            {
+                throw new NotFoundException(ErrorCodes.ORD_001, "Orden no encontrada.");
+            }
+
+            // El cambio tiene que estar permitido si no, error ORD-006
+            if (!EsCambioPermitido(orden.Estado, request.Estado))
+            {
+                throw new BusinessRuleException(ErrorCodes.ORD_006,
+                    $"Una orden en estado '{orden.Estado}' no puede pasar a '{request.Estado}'.");
+            }
+
+            DateTime fechaActualizacion = DateTime.UtcNow;
+            await _repo.UpdateEstadoAsync(id, request.Estado, fechaActualizacion);
+            _logger.LogInformation("Orden {OrdenId} pasó de {EstadoAnterior} a {EstadoNuevo}",
+                id, orden.Estado, request.Estado);
+
+            return new EstadoActualizadoDto(id, request.Estado, fechaActualizacion);
+        }
+
+        private static bool EsCambioPermitido(string estadoActual, string estadoNuevo)
+        {
+            if (estadoActual == "Pendiente")
+                return estadoNuevo == "Confirmada" || estadoNuevo == "Cancelada";
+
+            if (estadoActual == "Confirmada")
+                return estadoNuevo == "Enviada" || estadoNuevo == "Cancelada";
+
+            if (estadoActual == "Enviada")
+                return estadoNuevo == "Entregada";
+
+            return false;
         }
 
         // Pasa la orden al DTO que devuelve la API
