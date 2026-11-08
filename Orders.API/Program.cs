@@ -1,12 +1,16 @@
 using Orders.API.Clients;
 using Orders.API.Data;
 using Orders.API.ExceptionHandlers;
+using Orders.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Servicios de la bd
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddScoped<OrdenRepository>();
+
+// Servicio de órdenes
+builder.Services.AddScoped<OrdenService>();
 
 // Handlers de errores: primero los especificos y al final el general
 builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
@@ -25,6 +29,14 @@ builder.Services.AddHttpClient<ProductsClient>(client =>
     client.BaseAddress = new Uri(builder.Configuration["Services:ProductsApi"] ?? "http://localhost:5101");
 });
 
+// Controllers. Los datos los validamos nosotros en el servicio (error ORD-002)
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Inicializar bd
@@ -34,6 +46,14 @@ using (var scope = app.Services.CreateScope())
 // Activa los handlers de errores
 app.UseExceptionHandler();
 
-app.MapGet("/", () => "Orders.API funcionando");
+// Swagger solo en Development
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+// Endpoints
+app.MapControllers();
 
 app.Run();
