@@ -42,7 +42,13 @@ namespace Orders.API.Extensions
             services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(options =>
+            {
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"; // Lee los comentarios XML de los DTOs y del controller 
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+
+                options.OperationFilter<ErrorExamplesFilter>();  // Agrega los ejemplos de error de cada endpoint
+            });
 
             services.AddHealthChecks()
                 .AddCheck<SqliteHealthCheck>("sqlite-db", tags: ["database"])
