@@ -8,8 +8,7 @@ using ValidationException = Products.API.Exceptions.ValidationException;
 
 namespace Products.API.Services
 {
-    // Lógica de negocio de productos. Los errores se lanzan como excepciones
-    // de dominio y los IExceptionHandler arman la respuesta.
+    
     public class ProductoService
     {
         private readonly ProductoRepository _repo;

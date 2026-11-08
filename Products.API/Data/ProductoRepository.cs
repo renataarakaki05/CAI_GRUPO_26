@@ -5,7 +5,7 @@ using Products.API.Models;
 
 namespace Products.API.Data
 {
-    //  basada en el ItemRepository (Dapper + SQLite).
+
     public class ProductoRepository
     {
         private readonly IConfiguration _config;
@@ -21,7 +21,7 @@ namespace Products.API.Data
             FROM products
         """;
 
-        // ── GET ALL ───────────────────────────────────────────────────────────
+
         public async Task<IEnumerable<Producto>> GetAllAsync()
         {
             using var conn = CreateConnection();
@@ -36,7 +36,7 @@ namespace Products.API.Data
             return productos;
         }
 
-        // ── GET BY ID ─────────────────────────────────────────────────────────
+
         public async Task<Producto?> GetByIdAsync(Guid id)
         {
             using var conn = CreateConnection();
@@ -50,7 +50,7 @@ namespace Products.API.Data
             return row.ToEntity();
         }
 
-        // ── CREATE ────────────────────────────────────────────────────────────
+
         public async Task CreateAsync(Producto Producto)
         {
             using var conn = CreateConnection();
@@ -60,7 +60,7 @@ namespace Products.API.Data
         """, ToParameters(Producto));
         }
 
-        // ── UPDATE ────────────────────────────────────────────────────────────
+
         public async Task<bool> UpdateAsync(Producto Producto)
         {
             using var conn = CreateConnection();
@@ -77,7 +77,7 @@ namespace Products.API.Data
             return rows > 0;
         }
 
-        // ── DELETE ────────────────────────────────────────────────────────────
+
         public async Task<bool> DeleteAsync(Guid id)
         {
             using var conn = CreateConnection();
@@ -99,7 +99,7 @@ namespace Products.API.Data
             };
         }
 
-        // Fila tal como viene de SQLite (Guid y fecha como texto)
+
         private class ProductRow
         {
             public string Id { get; set; } = string.Empty;

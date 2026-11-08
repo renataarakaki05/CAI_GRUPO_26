@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 
 namespace Notifications.API.Data
 {
-    // Basado en el DatabaseInitializer de la cátedra (MiniApi), adaptado a la tabla notifications.
+    
     public class DatabaseInitializer
     {
         private readonly IConfiguration _config;
@@ -23,7 +23,7 @@ namespace Notifications.API.Data
             using var connection = new SqliteConnection(connectionString);
             connection.Open();
 
-            // Los Guid se guardan como TEXT; la fecha se guarda en formato ISO 8601
+            
             connection.Execute("""
             CREATE TABLE IF NOT EXISTS notifications (
                 id          TEXT PRIMARY KEY,

@@ -6,7 +6,7 @@ public partial class Program
 
     private static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args); // es como el canva
+        var builder = WebApplication.CreateBuilder(args); 
 
         // 1. Logging (Serilog va antes que cualquier otra configuración)
         builder.AddAppLogging();

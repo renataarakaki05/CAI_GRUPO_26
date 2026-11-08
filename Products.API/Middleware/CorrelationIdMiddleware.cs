@@ -2,8 +2,7 @@ using Serilog.Context;
 
 namespace Products.API.Middleware
 {
-    // Genera (o reutiliza) el X-Correlation-Id de cada request, lo agrega a todos los logs
-    // del request y loggea el inicio.
+
     public class CorrelationIdMiddleware
     {
         public const string HeaderName = "X-Correlation-Id";
@@ -19,7 +18,7 @@ namespace Products.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Si otro microservicio ya mandó un Correlation ID, se respeta
+            
             var correlationId = context.Request.Headers.TryGetValue(HeaderName, out var value) && !string.IsNullOrWhiteSpace(value)
                 ? value.ToString()
                 : Guid.NewGuid().ToString();
@@ -36,14 +35,14 @@ namespace Products.API.Middleware
             using (LogContext.PushProperty("CorrelationId", correlationId))
             using (LogContext.PushProperty("Endpoint", endpoint))
             {
-                // El fin del request con su duración lo loggea UseSerilogRequestLogging
+                
                 _logger.LogInformation("Inicio request {Endpoint}", endpoint);
                 await _next(context);
             }
         }
     }
 
-    // Propaga el Correlation ID en las llamadas HTTP salientes (IHttpClientFactory)
+   
     public class CorrelationIdDelegatingHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _accessor;

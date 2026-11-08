@@ -7,9 +7,8 @@ using Products.API.Swagger;
 
 namespace Products.API.Controllers
 {
-    /// <summary>
-    /// Endpoints de productos. La lógica de negocio está en ProductoService.
-    /// </summary>
+ 
+    // Endpoints de productos. 
     [ApiController]
     [Route("api/products")]
     [Tags("Products")]
@@ -23,7 +22,6 @@ namespace Products.API.Controllers
             _service = service;
         }
 
-        /// <summary>Listar productos (filtro ?categoria= y ?nombre=)</summary>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ProductoDto>), StatusCodes.Status200OK)]
         [ErrorExample(StatusCodes.Status500InternalServerError, ErrorCodes.PRD_005)]
@@ -33,7 +31,6 @@ namespace Products.API.Controllers
             return Ok(productos);
         }
 
-        /// <summary>Obtener producto por ID</summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status200OK)]
         [ErrorExample(StatusCodes.Status404NotFound, ErrorCodes.PRD_001)]
@@ -44,7 +41,7 @@ namespace Products.API.Controllers
             return Ok(producto);
         }
 
-        /// <summary>Crear nuevo producto</summary>
+
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status201Created)]
@@ -57,7 +54,7 @@ namespace Products.API.Controllers
             return Created($"/api/products/{producto.Id}", producto);
         }
 
-        /// <summary>Actualizar producto existente</summary>
+
         [HttpPut("{id}")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status200OK)]
@@ -70,7 +67,7 @@ namespace Products.API.Controllers
             return Ok(producto);
         }
 
-        /// <summary>Eliminar producto</summary>
+
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ErrorExample(StatusCodes.Status404NotFound, ErrorCodes.PRD_001)]
@@ -82,7 +79,7 @@ namespace Products.API.Controllers
             return NoContent();
         }
 
-        // Un ID que no es un Guid válido (ej: /api/products/99) tampoco existe → PRD-001
+
         private static Guid ParseId(string id)
         {
             if (Guid.TryParse(id, out var guid))

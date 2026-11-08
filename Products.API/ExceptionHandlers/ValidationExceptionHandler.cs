@@ -19,14 +19,14 @@ namespace Products.API.ExceptionHandlers
 
             if (exception is ValidationException)
             {
-                // Datos que no cumplen las validaciones del DTO (los lanza ProductoService)
+               
                 var ex = (ValidationException)exception;
                 errorCode = ex.ErrorCode;
                 errorMessage = ex.Message;
             }
             else if (exception is BadHttpRequestException)
             {
-                // Request que ASP.NET Core rechaza antes de llegar al controller
+                
                 errorCode = ErrorCodes.PRD_002;
                 errorMessage = "Los datos del producto son inválidos: el cuerpo de la request falta o no es un JSON válido.";
             }

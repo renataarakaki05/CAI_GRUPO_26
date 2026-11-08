@@ -8,8 +8,7 @@ using ValidationException = Notifications.API.Exceptions.ValidationException;
 
 namespace Notifications.API.Services
 {
-    // Lógica de negocio de notificaciones. Los errores se lanzan como excepciones
-    // de dominio y los IExceptionHandler arman la respuesta.
+    // los errores se lanzan como excepciones de dominio y los IExceptionHandler arman la respuesta.
     public class NotificacionService
     {
         private static readonly string[] TiposValidos = { "Email", "Push", "SMS" };
@@ -33,7 +32,7 @@ namespace Notifications.API.Services
             if (!await _users.ExisteUsuarioAsync(usuarioId, ct))
                 throw new NotFoundException(ErrorCodes.NTF_001, "El usuario destinatario no fue encontrado.");
 
-            // Se guarda con la forma canónica aunque llegue "email" o "sms"
+
             var tipo = request.Tipo.Trim();
             foreach (var tipoValido in TiposValidos)
             {
@@ -53,7 +52,6 @@ namespace Notifications.API.Services
                 FechaEnvio = DateTime.UtcNow
             };
 
-            // El envío es simulado: no hay proveedor real de Email/Push/SMS
             _logger.LogInformation("Simulando envío por {Tipo} al usuario {UsuarioId}", notificacion.Tipo, usuarioId);
             notificacion.Estado = "Enviada";
 
@@ -79,7 +77,7 @@ namespace Notifications.API.Services
             return resultado;
         }
 
-        // Valida las Data Annotations del DTO; todos los problemas van separados por punto y coma (NTF-002)
+        // Valida las Data Annotations del DTO
         private static void Validar(EnviarNotificacionDto request)
         {
             // Si el body falta o no es un JSON válido, el controller recibe null

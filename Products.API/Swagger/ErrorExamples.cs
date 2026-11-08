@@ -4,9 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Products.API.Swagger
 {
-    /// <summary>
-    /// Marca un endpoint con un posible error del catálogo para que Swagger muestre su ejemplo.
-    /// </summary>
+ 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class ErrorExampleAttribute : Attribute
     {
@@ -20,8 +18,7 @@ namespace Products.API.Swagger
         }
     }
 
-    // Agrega a Swagger el ejemplo de response de error de cada [ErrorExample],
-    // siguiendo los contratos de la sección 4.1 de la consigna.
+
     public class ErrorExamplesOperationFilter : IOperationFilter
     {
         private class Example
@@ -61,11 +58,11 @@ namespace Products.API.Swagger
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            // El instance sale de la ruta del endpoint, porque un mismo código puede usarse en varios endpoints
+            // el instance sale de la ruta del endpoint, porque un mismo código puede usarse en varios endpoints
             var instance = "/" + context.ApiDescription.RelativePath;
             instance = instance.Replace("{id}", "3fa85f64-5717-4562-b3fc-2c963f66afa6");
 
-            // Cada acción del controller se marca con [ErrorExample(...)]
+            
             foreach (var metadata in context.ApiDescription.ActionDescriptor.EndpointMetadata)
             {
                 var attr = metadata as ErrorExampleAttribute;

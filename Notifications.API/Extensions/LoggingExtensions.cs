@@ -16,26 +16,25 @@ namespace Notifications.API.Extensions
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("Servicio", "Notifications.API")
 
-                // ALUMNO: LOG DE CONSOLA: formato legible, con servicio, Correlation ID y endpoint
+               
                 .WriteTo.Console(outputTemplate:
                     "[{Timestamp:HH:mm:ss} {Level:u3}] [{Servicio}] [{CorrelationId}] {Endpoint} {Message:lj}{NewLine}{Exception}")
 
-                // ALUMNO: LOG DE ARCHIVO: JSON estructurado (Timestamp, Nivel, Servicio, Endpoint, CorrelationId, ErrorCode)
+               
                 .WriteTo.File(
                     formatter: new CompactJsonFormatter(),
                     path: "logs/notifications.json",
                     rollingInterval: RollingInterval.Day)
 
-                // ALUMNO: LOG DE AUDITORÍA: Solo registra cuando se consume un endpoint, es una auditoría limpia.
+               
                 .WriteTo.Logger(lc => lc
                     .Filter.ByIncludingOnly(le =>
                     {
-                        // Solo aceptar logs que vengan del Middleware de Serilog
-                        // Esto elimina automáticamente los duplicados de Microsoft.AspNetCore.Mvc
+                        
                         var isSerilogMiddleware = Matching.FromSource("Serilog.AspNetCore.RequestLoggingMiddleware")(le);
                         if (!isSerilogMiddleware) return false;
 
-                        // Excluir rutas irrelevantes
+                       
                         if (le.Properties.TryGetValue("RequestPath", out var pathValue) &&
                             pathValue is ScalarValue scalar && scalar.Value is string path)
                         {

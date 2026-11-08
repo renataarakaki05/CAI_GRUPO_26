@@ -17,18 +17,18 @@ namespace Products.API.Extensions
             services.AddScoped<ProductoRepository>();
             services.AddScoped<ProductoService>();
 
-            // Manejo de errores: del más específico al genérico (Apéndice B)
+            // manejo de errores 
             services.AddExceptionHandler<NotFoundExceptionHandler>();
             services.AddExceptionHandler<BusinessRuleExceptionHandler>();
             services.AddExceptionHandler<ValidationExceptionHandler>();
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
 
-            // Se apaga el 400 automático de [ApiController]: la validación la hace ProductoService con PRD-002
+          
             services.AddControllers()
                 .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
-            // HTTP hacia Orders.API (IHttpClientFactory), propagando el X-Correlation-Id
+            
             services.AddHttpContextAccessor();
             services.AddTransient<CorrelationIdDelegatingHandler>();
             services.AddHttpClient<OrdersClient>(client =>
@@ -40,7 +40,7 @@ namespace Products.API.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
-                // Comentarios XML de los DTOs y ejemplos de error del catálogo
+                
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
                 options.OperationFilter<ErrorExamplesOperationFilter>();

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Products.API.HealthChecks
 {
-    // Igual al de la cátedra: verifica que la base responde.
+    
     public class SqliteHealthCheck : IHealthCheck
     {
         private readonly IConfiguration _config;

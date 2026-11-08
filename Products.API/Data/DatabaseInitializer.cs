@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 
 namespace Products.API.Data
 {
-    // Basado en el DatabaseInitializer de la cátedra (MiniApi), adaptado a la tabla products.
+
     public class DatabaseInitializer
     {
         private readonly IConfiguration _config;
@@ -23,7 +23,7 @@ namespace Products.API.Data
             using var connection = new SqliteConnection(connectionString);
             connection.Open();
 
-            // El Id es un Guid guardado como TEXT; la fecha se guarda en formato ISO 8601
+
             connection.Execute("""
             CREATE TABLE IF NOT EXISTS products (
                 id             TEXT    PRIMARY KEY,

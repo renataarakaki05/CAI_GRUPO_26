@@ -2,7 +2,7 @@ using System.Net;
 
 namespace Notifications.API.Clients
 {
-    // Cliente HTTP hacia Users.API. Se usa para NTF-001:
+    // cliente HTTP hacia Users.API. Se usa para NTF-001:
     // no se puede enviar una notificación a un usuario que no existe.
     public class UsersClient
     {
@@ -17,10 +17,10 @@ namespace Notifications.API.Clients
 
         public async Task<bool> ExisteUsuarioAsync(Guid usuarioId, CancellationToken ct = default)
         {
-            // Si Users.API no responde, la excepción llega al GlobalExceptionHandler → NTF-004
+            // si Users.API no responde, la excepción llega al GlobalExceptionHandler, NTF-004
             var response = await _http.GetAsync($"/api/users/{usuarioId}", ct);
 
-            // Verificar siempre el status antes de leer el body
+            // verifico siempre el status antes de leer el body
             if (response.IsSuccessStatusCode) return true;
             if (response.StatusCode == HttpStatusCode.NotFound) return false;
 

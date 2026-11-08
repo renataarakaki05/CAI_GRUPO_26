@@ -2,8 +2,7 @@ using Serilog.Context;
 
 namespace Notifications.API.Middleware
 {
-    // Genera (o reutiliza) el X-Correlation-Id de cada request, lo agrega a todos los logs
-    // del request y loggea el inicio.
+   
     public class CorrelationIdMiddleware
     {
         public const string HeaderName = "X-Correlation-Id";
@@ -43,7 +42,7 @@ namespace Notifications.API.Middleware
         }
     }
 
-    // Propaga el Correlation ID en las llamadas HTTP salientes (IHttpClientFactory)
+    
     public class CorrelationIdDelegatingHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _accessor;

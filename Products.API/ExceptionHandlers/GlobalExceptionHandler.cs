@@ -3,7 +3,7 @@ using Products.API.Exceptions;
 
 namespace Products.API.ExceptionHandlers
 {
-    // Red de seguridad: atrapa cualquier excepción que no manejaron los handlers anteriores.
+    //atrapa cualquier excepción que no manejaron los handlers anteriores.
     public class GlobalExceptionHandler : IExceptionHandler
     {
         private readonly ILogger<GlobalExceptionHandler> _logger;
@@ -17,7 +17,7 @@ namespace Products.API.ExceptionHandlers
 
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
         {
-            // Error inesperado → Error (el stack trace queda solo en el log, nunca en la respuesta)
+            
             _logger.LogError(exception, "{ErrorCode} Error inesperado: {Message}", ErrorCodes.PRD_005, exception.Message);
 
             var includeDetails = _config.GetValue<bool>("ErrorHandling:IncludeExceptionDetails");

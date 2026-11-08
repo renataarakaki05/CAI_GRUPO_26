@@ -9,7 +9,7 @@ namespace Products.API.Extensions
     {
         public static void UseAppMiddleware(this WebApplication app)
         {
-            // Primero el Correlation ID, así todos los logs del request lo tienen
+            
             app.UseMiddleware<CorrelationIdMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -31,7 +31,7 @@ namespace Products.API.Extensions
             // Va después de la auditoría para que el body del error también quede auditado
             app.UseExceptionHandler();
 
-            // /health: todos los checks; /health/ready: la base; /health/live: la API
+           
             app.MapHealthChecks("/health", new HealthCheckOptions
             {
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

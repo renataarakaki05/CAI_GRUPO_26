@@ -8,7 +8,7 @@ namespace Products.API.Middleware
         private readonly RequestDelegate _next;
         private readonly ILogger<AuditMiddleware> _logger;
 
-        // Solo auditar operaciones de escritura
+       
         private static readonly HashSet<string> AuditMethods =
             new(StringComparer.OrdinalIgnoreCase) { "POST", "PUT", "DELETE" };
 
@@ -20,34 +20,34 @@ namespace Products.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Si no es una operación de escritura, pasar directo
+            
             if (!AuditMethods.Contains(context.Request.Method))
             {
                 await _next(context);
                 return;
             }
 
-            // ── Capturar Request body ──────────────────────────────────────────
+            //  Capturar Request body 
             context.Request.EnableBuffering(); // permite releer el stream
             var requestBody = await ReadBodyAsync(context.Request.Body);
             context.Request.Body.Position = 0; // rebobinar para que el endpoint lo lea
 
-            // ── Capturar Response body ─────────────────────────────────────────
+            //  Capturar Response body 
             var originalResponseBody = context.Response.Body;
             using var memStream = new MemoryStream();
             context.Response.Body = memStream;
 
-            await _next(context); // ejecutar el endpoint
+            await _next(context); // ejectuo el endpoint
 
             memStream.Position = 0;
             var responseBody = await new StreamReader(memStream).ReadToEndAsync();
 
-            // Copiar la respuesta de vuelta al stream original
+            
             memStream.Position = 0;
             await memStream.CopyToAsync(originalResponseBody);
             context.Response.Body = originalResponseBody;
 
-            // ── Escribir entrada de auditoría ──────────────────────────────────
+           
             _logger.LogInformation(
                 "AUDIT {@Method} {@Path} {@StatusCode} {@RequestBody} {@ResponseBody}",
                 context.Request.Method,
