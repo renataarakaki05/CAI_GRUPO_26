@@ -77,7 +77,7 @@ namespace Users.API.Swagger
             }
             else if (status == 409)
             {
-                type = "https://tools.ietf.org/html/rfc7231#section-6.5.8";
+                type = "https://tools.ietf.org/html/rfc7231#section-6.5.9";
                 title = "Conflict";
                 detail = "Ya existe un recurso con esos datos.";
             }
@@ -105,12 +105,12 @@ namespace Users.API.Swagger
 
             if (!operation.Responses.TryGetValue(codigo, out var existente) || existente is not OpenApiResponse respuesta)
             {
-                respuesta = new OpenApiResponse { Description = errorCode };
+                respuesta = new OpenApiResponse { Description = errorCode + ": " + errorMessage };
                 operation.Responses[codigo] = respuesta;
             }
             else 
             {
-                respuesta.Description += " / " + errorCode;  // Login tiene dos errores 403 muestro los dos
+                respuesta.Description += " / " + errorCode + ": " + errorMessage;
             }
 
             respuesta.Content ??= new Dictionary<string, OpenApiMediaType>();
