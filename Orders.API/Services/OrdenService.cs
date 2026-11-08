@@ -71,6 +71,34 @@ namespace Orders.API.Services
             return ConvertirADto(orden);
         }
 
+        // LISTAR
+        public async Task<List<OrdenDto>> GetAllAsync(Guid? usuarioId)
+        {
+            var ordenes = await _repo.GetAllAsync(usuarioId);
+
+            var resultado = new List<OrdenDto>();
+            foreach (var orden in ordenes)
+            {
+                resultado.Add(ConvertirADto(orden));
+            }
+
+            return resultado;
+        }
+
+        // BUSCAR POR ID
+        public async Task<OrdenDto> GetByIdAsync(Guid id)
+        {
+            var orden = await _repo.GetByIdAsync(id);
+
+            // Si no existe: error ORD-001 (404)
+            if (orden == null)
+            {
+                throw new NotFoundException(ErrorCodes.ORD_001, "Orden no encontrada.");
+            }
+
+            return ConvertirADto(orden);
+        }
+
         // Pasa la orden al DTO que devuelve la API
         private static OrdenDto ConvertirADto(Orden orden)
         {
