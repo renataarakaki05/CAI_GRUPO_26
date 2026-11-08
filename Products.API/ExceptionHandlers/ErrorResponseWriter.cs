@@ -24,7 +24,8 @@ namespace Products.API.ExceptionHandlers
                 ["errorCode"] = errorCode,
                 ["errorMessage"] = errorMessage,
                 ["correlationId"] = context.TraceIdentifier
-   
+            };
+
             if (exceptionDetail is not null)
                 body["exceptionDetail"] = exceptionDetail;
 
