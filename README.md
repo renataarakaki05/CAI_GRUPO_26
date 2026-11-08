@@ -10,15 +10,15 @@ Todos los microservicios se construyeron a partir del proyecto base de la cáted
 | Integrante | Microservicios |
 |---|---|
 | Renata | Products.API, Notifications.API |
-| Candela | Users.API |
-| Federico | Cart.API, Orders.API |
+| Candela | Users.API, Orders.API |
+| Federico | Cart.API |
 
 ## Microservicios
 
 | Servicio | Puerto | Descripción | Estado |
 |---|---|---|---|
 | Products.API | 5101 | Catálogo de productos: alta, baja, modificación y consulta con filtros por categoría y nombre. | Terminado |
-| Users.API | 5102 | Registro y login de usuarios, con bloqueo tras 3 intentos fallidos. | Pendiente |
+| Users.API | 5102 | Registro y login de usuarios, con bloqueo tras 3 intentos fallidos. | Terminado |
 | Orders.API | 5103 | Creación de órdenes validando usuario, productos y stock; cambios de estado. | Pendiente |
 | Cart.API | 5104 | Carrito de compras por usuario, validando productos y stock contra Products.API. | Pendiente |
 | Notifications.API | 5105 | Registro y envío simulado de notificaciones (Email, Push, SMS) a usuarios existentes. | Terminado |
@@ -277,7 +277,7 @@ Capturas de Swagger UI mostrando ejemplos de response de error con `errorCode` y
 | Servicio | Captura |
 |---|---|
 | Products.API | [GET lista](docs/products-get-lista.png) · POST [1](docs/products-post-1.png) [2](docs/products-post-2.png) · GET por ID [1](docs/products-get-id-1.png) [2](docs/products-get-id-2.png) · PUT [1](docs/products-put-1.png) [2](docs/products-put-2.png) · [DELETE](docs/products-delete.png) |
-| Users.API | Pendiente |
+| Users.API | Register [1](docs/users-register-1.png) [2](docs/users-register-2.png) · Login [1](docs/users-login-1.png) [2](docs/users-login-2.png) [3](docs/users-login-3.png) [4](docs/users-login-4.png) · GET por ID [1](docs/users-get-id-1.png) [2](docs/users-get-id-2.png) |
 | Orders.API | Pendiente |
 | Cart.API | Pendiente |
 | Notifications.API | POST [1](docs/notifications-post-1.png) [2](docs/notifications-post-2.png) · GET [1](docs/notifications-get-1.png) [2](docs/notifications-get-2.png) |
