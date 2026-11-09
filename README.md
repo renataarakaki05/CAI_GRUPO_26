@@ -141,6 +141,15 @@ Las respuestas de health checks devuelven el estado `Healthy`, `Degraded` o `Unh
 | DELETE | `/api/cart/{userId}/items/{productId}` | Quitar un producto del carrito | 204, 404, 500 |
 | DELETE | `/api/cart/{userId}` | Vaciar carrito completo | 204, 404, 500 |
 
+Reglas del carrito:
+
+- El carrito se crea solo la primera vez que el usuario agrega un producto (`POST /items`). Antes de eso, `GET`, `PUT` y `DELETE` responden CRT-001.
+- Si se agrega un producto que ya está en el carrito, se suman las cantidades. El total no puede superar el stock de Products.API (CRT-003).
+- Vaciar el carrito (`DELETE /api/cart/{userId}`) le saca todos los productos, pero el carrito sigue existiendo: después `GET` responde 200 con `items: []`. Es lo mismo que quitar los productos uno por uno. CRT-001 queda para el usuario que todavía no tiene carrito.
+- Un `userId` que no es un GUID válido se responde como CRT-001, y un `productId` inválido como CRT-002.
+- `/health/ready` de Cart.API también chequea que Products.API responda: si está caída devuelve `Degraded`, porque el carrito no puede validar productos ni stock.
+- En `Cart.API/Cart.API.http` están los requests de prueba (casos de éxito y de cada error) para ejecutar desde Visual Studio.
+
 ### Notifications.API (puerto 5105)
 
 | Método | Endpoint | Descripción | HTTP Status posibles |
