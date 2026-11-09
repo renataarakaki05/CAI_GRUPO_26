@@ -68,7 +68,7 @@ Comunicación entre servicios:
 
 ### Desde Visual Studio
 
-1. 1. Abrir la solución ECommerce.sln.
+1. Abrir la solución `ECommerce.sln`.
 2. Para levantar un solo servicio: elegirlo como proyecto de inicio y ejecutar con F5 (perfil `https`, abre Swagger automáticamente).
 3. Para levantar varios a la vez: clic derecho en la solución → **Configurar proyectos de inicio** → **Varios proyectos de inicio** → marcar **Iniciar** en cada servicio.
 
