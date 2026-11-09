@@ -68,7 +68,7 @@ Comunicación entre servicios:
 
 ### Desde Visual Studio
 
-1. Abrir la solución `MiniApi.slnx`.
+1. 1. Abrir la solución ECommerce.sln.
 2. Para levantar un solo servicio: elegirlo como proyecto de inicio y ejecutar con F5 (perfil `https`, abre Swagger automáticamente).
 3. Para levantar varios a la vez: clic derecho en la solución → **Configurar proyectos de inicio** → **Varios proyectos de inicio** → marcar **Iniciar** en cada servicio.
 
@@ -77,11 +77,11 @@ Comunicación entre servicios:
 Ejecutar cada servicio en una terminal distinta, desde la carpeta raíz del repositorio:
 
 ```
-dotnet run --project Products.API --launch-profile http
-dotnet run --project Users.API --launch-profile http
-dotnet run --project Orders.API --launch-profile http
-dotnet run --project Cart.API --launch-profile http
-dotnet run --project Notifications.API --launch-profile http
+dotnet run --project src/Products.API --launch-profile http
+dotnet run --project src/Users.API --launch-profile http
+dotnet run --project src/Orders.API --launch-profile http
+dotnet run --project src/Cart.API --launch-profile http
+dotnet run --project src/Notifications.API --launch-profile http
 ```
 
 La base de datos SQLite de cada servicio (por ejemplo `products.db`) se crea sola la primera vez que se ejecuta.
@@ -148,7 +148,7 @@ Reglas del carrito:
 - Vaciar el carrito (`DELETE /api/cart/{userId}`) le saca todos los productos, pero el carrito sigue existiendo: después `GET` responde 200 con `items: []`. Es lo mismo que quitar los productos uno por uno. CRT-001 queda para el usuario que todavía no tiene carrito.
 - Un `userId` que no es un GUID válido se responde como CRT-001, y un `productId` inválido como CRT-002.
 - `/health/ready` de Cart.API también chequea que Products.API responda: si está caída devuelve `Degraded`, porque el carrito no puede validar productos ni stock.
-- En `Cart.API/Cart.API.http` están los requests de prueba (casos de éxito y de cada error) para ejecutar desde Visual Studio.
+- En `src/Cart.API/Cart.API.http` están los requests de prueba (casos de éxito y de cada error) para ejecutar desde Visual Studio.
 
 ### Notifications.API (puerto 5105)
 
@@ -256,6 +256,22 @@ Cada servicio escribe sus logs en la carpeta `logs/` de su proyecto:
 ### Correlation ID
 
 Cada request recibe un `X-Correlation-Id` único (o reutiliza el que llega en el header). Se agrega a todos los logs del request, se devuelve en el header de la respuesta y en el campo `correlationId` de los errores, y se propaga en las llamadas HTTP a otros servicios.
+
+## Estructura del repositorio
+
+```
+ECommerce.sln              # Solución con los 5 microservicios
+├── src/
+│   ├── Products.API/
+│   ├── Users.API/
+│   ├── Orders.API/
+│   ├── Cart.API/
+│   └── Notifications.API/
+├── MiniApi/               # Proyecto base de la cátedra (referencia, no forma parte de la solución)
+├── docs/                  # Capturas de Swagger
+└── README.md
+```
+
 
 ## Estructura de cada microservicio
 
