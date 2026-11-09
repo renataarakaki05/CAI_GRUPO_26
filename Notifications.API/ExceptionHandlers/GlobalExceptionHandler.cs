@@ -1,0 +1,38 @@
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Notifications.API.Exceptions;
+
+namespace Notifications.API.ExceptionHandlers
+{
+
+    public class GlobalExceptionHandler : IExceptionHandler
+    {
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+        private readonly IConfiguration _config;
+
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IConfiguration config)
+        {
+            _logger = logger;
+            _config = config;
+        }
+
+        public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
+        {
+            // error inesperado
+            _logger.LogError(exception, "{ErrorCode} Error inesperado: {Message}", ErrorCodes.NTF_004, exception.Message);
+
+            var includeDetails = _config.GetValue<bool>("ErrorHandling:IncludeExceptionDetails");
+
+            await ErrorResponseWriter.WriteAsync(context,
+                status: StatusCodes.Status500InternalServerError,
+                type: "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                title: "Internal Server Error",
+                detail: "Ocurrió un error inesperado.",
+                errorCode: ErrorCodes.NTF_004,
+                errorMessage: "Error interno al procesar la notificación.",
+                ct: ct,
+                exceptionDetail: includeDetails ? exception.Message : null);
+
+            return true;
+        }
+    }
+}

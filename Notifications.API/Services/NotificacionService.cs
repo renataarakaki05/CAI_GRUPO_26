@@ -1,0 +1,104 @@
+using System.ComponentModel.DataAnnotations;
+using Notifications.API.Clients;
+using Notifications.API.Data;
+using Notifications.API.DTOs;
+using Notifications.API.Exceptions;
+using Notifications.API.Models;
+using ValidationException = Notifications.API.Exceptions.ValidationException;
+
+namespace Notifications.API.Services
+{
+    // los errores se lanzan como excepciones de dominio y los IExceptionHandler arman la respuesta.
+    public class NotificacionService
+    {
+        private static readonly string[] TiposValidos = { "Email", "Push", "SMS" };
+
+        private readonly NotificacionRepository _repo;
+        private readonly UsersClient _users;
+        private readonly ILogger<NotificacionService> _logger;
+
+        public NotificacionService(NotificacionRepository repo, UsersClient users, ILogger<NotificacionService> logger)
+        {
+            _repo = repo;
+            _users = users;
+            _logger = logger;
+        }
+
+        public async Task<NotificacionDto> EnviarAsync(EnviarNotificacionDto request, CancellationToken ct)
+        {
+            Validar(request);
+            var usuarioId = request.UsuarioId!.Value;
+
+            if (!await _users.ExisteUsuarioAsync(usuarioId, ct))
+                throw new NotFoundException(ErrorCodes.NTF_001, "El usuario destinatario no fue encontrado.");
+
+
+            var tipo = request.Tipo.Trim();
+            foreach (var tipoValido in TiposValidos)
+            {
+                if (tipoValido.Equals(tipo, StringComparison.OrdinalIgnoreCase))
+                {
+                    tipo = tipoValido;
+                    break;
+                }
+            }
+
+            var notificacion = new Notificacion
+            {
+                Id = Guid.NewGuid(),
+                UsuarioId = usuarioId,
+                Mensaje = request.Mensaje.Trim(),
+                Tipo = tipo,
+                FechaEnvio = DateTime.UtcNow
+            };
+
+            _logger.LogInformation("Simulando envío por {Tipo} al usuario {UsuarioId}", notificacion.Tipo, usuarioId);
+            notificacion.Estado = "Enviada";
+
+            await _repo.CreateAsync(notificacion);
+            _logger.LogInformation("Notificación {NotificacionId} registrada", notificacion.Id);
+
+            return NotificacionDto.FromEntity(notificacion);
+        }
+
+        public async Task<IEnumerable<NotificacionDto>> GetByUsuarioAsync(Guid usuarioId)
+        {
+            var notificaciones = await _repo.GetByUsuarioAsync(usuarioId);
+
+            var resultado = new List<NotificacionDto>();
+            foreach (var notificacion in notificaciones)
+            {
+                resultado.Add(NotificacionDto.FromEntity(notificacion));
+            }
+
+            if (resultado.Count == 0)
+                throw new NotFoundException(ErrorCodes.NTF_003, "No se encontraron notificaciones para el usuario.");
+
+            return resultado;
+        }
+
+        // Valida las Data Annotations del DTO
+        private static void Validar(EnviarNotificacionDto request)
+        {
+            // Si el body falta o no es un JSON válido, el controller recibe null
+            if (request == null)
+            {
+                throw new ValidationException(ErrorCodes.NTF_002,
+                    "Los datos de la notificación son inválidos: el cuerpo de la request falta o no es un JSON válido.");
+            }
+
+            var resultados = new List<ValidationResult>();
+            if (Validator.TryValidateObject(request, new ValidationContext(request), resultados, validateAllProperties: true))
+                return;
+
+            var errores = new List<string?>();
+            foreach (var resultado in resultados)
+            {
+                errores.Add(resultado.ErrorMessage);
+            }
+
+            throw new ValidationException(ErrorCodes.NTF_002,
+                $"Los datos de la notificación son inválidos: {string.Join("; ", errores)}.");
+        }
+    }
+}

@@ -1,0 +1,27 @@
+@Notifications.API_HostAddress = http://localhost:5105
+
+
+POST {{Notifications.API_HostAddress}}/api/notifications/send
+Content-Type: application/json
+
+{
+  "usuarioId": "a1b2c3d4-0000-0000-0000-111122223333",
+  "mensaje": "Su orden #f1e2d3c4 fue confirmada.",
+  "tipo": "Email"
+}
+
+
+POST {{Notifications.API_HostAddress}}/api/notifications/send
+Content-Type: application/json
+
+{
+  "usuarioId": "a1b2c3d4-0000-0000-0000-111122223333",
+  "mensaje": "",
+  "tipo": "Fax"
+}
+
+
+GET {{Notifications.API_HostAddress}}/api/notifications/a1b2c3d4-0000-0000-0000-111122223333
+
+
+GET {{Notifications.API_HostAddress}}/health

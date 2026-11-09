@@ -45,7 +45,10 @@ packages/
 # =========================
 # Environment / secrets
 # =========================
+# appsettings.Development.json se versiona: la consigna pide controlar el detalle de errores por entorno
 appsettings.Local.json
 
-# Bases de datos SQLite (se crean solas al correr la API)
+# =========================
+# Bases SQLite locales
+# =========================
 *.db
