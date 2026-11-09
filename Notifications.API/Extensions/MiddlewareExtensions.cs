@@ -9,7 +9,7 @@ namespace Notifications.API.Extensions
     {
         public static void UseAppMiddleware(this WebApplication app)
         {
-            // Primero el Correlation ID, así todos los logs del request lo tienen
+            // primero el Correlation ID, así todos los logs del request lo tienen
             app.UseMiddleware<CorrelationIdMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -28,7 +28,7 @@ namespace Notifications.API.Extensions
 
             app.UseMiddleware<AuditMiddleware>();
 
-            // Va después de la auditoría para que el body del error también quede auditado
+            // va después de la auditoría para que el body del error también quede auditado
             app.UseExceptionHandler();
 
             // /health: todos los checks; /health/ready: la base; /health/live: la API

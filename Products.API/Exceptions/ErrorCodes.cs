@@ -1,7 +1,6 @@
 namespace Products.API.Exceptions;
 
-// Catálogo de errores de Products.API (sección 4.1 de la consigna).
-// Se usan constantes para no tener strings hardcodeados en el código.
+// Catálogo de errores de Products.API 
 public static class ErrorCodes
 {
     public const string PRD_001 = "PRD-001"; // 404 Producto no encontrado

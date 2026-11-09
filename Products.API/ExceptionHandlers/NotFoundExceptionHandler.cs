@@ -14,14 +14,14 @@ namespace Products.API.ExceptionHandlers
 
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
         {
-            // Este handler solo atiende NotFoundException; las demás siguen al próximo handler
+            
             var ex = exception as NotFoundException;
             if (ex == null)
             {
                 return false;
             }
 
-            // Error de negocio → Warning
+            
             _logger.LogWarning("{ErrorCode} {ErrorMessage}", ex.ErrorCode, ex.Message);
 
             await ErrorResponseWriter.WriteAsync(context,

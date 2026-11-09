@@ -5,7 +5,7 @@ using Notifications.API.Models;
 
 namespace Notifications.API.Data
 {
-    // Persistencia basada en el ItemRepository de la cátedra (Dapper + SQLite).
+    
     public class NotificacionRepository
     {
         private readonly IConfiguration _config;
@@ -15,7 +15,7 @@ namespace Notifications.API.Data
         private SqliteConnection CreateConnection() =>
             new(_config.GetConnectionString("DefaultConnection") ?? "Data Source=notifications.db");
 
-        // ── GET BY USUARIO ────────────────────────────────────────────────────
+        
         public async Task<IEnumerable<Notificacion>> GetByUsuarioAsync(Guid usuarioId)
         {
             using var conn = CreateConnection();
@@ -35,7 +35,7 @@ namespace Notifications.API.Data
             return notificaciones;
         }
 
-        // ── CREATE ────────────────────────────────────────────────────────────
+        
         public async Task CreateAsync(Notificacion notificacion)
         {
             using var conn = CreateConnection();
@@ -53,7 +53,7 @@ namespace Notifications.API.Data
             });
         }
 
-        // Fila tal como viene de SQLite (Guid y fecha como texto)
+        
         private class NotificacionRow
         {
             public string Id { get; set; } = string.Empty;

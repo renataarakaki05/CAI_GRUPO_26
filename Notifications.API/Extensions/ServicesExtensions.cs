@@ -17,17 +17,17 @@ namespace Notifications.API.Extensions
             services.AddScoped<NotificacionRepository>();
             services.AddScoped<NotificacionService>();
 
-            // Manejo de errores: del más específico al genérico (Apéndice B)
+            // Manejo de errores, del más específico al genérico
             services.AddExceptionHandler<NotFoundExceptionHandler>();
             services.AddExceptionHandler<ValidationExceptionHandler>();
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
 
-            // Se apaga el 400 automático de [ApiController]: la validación la hace NotificacionService con NTF-002
+            
             services.AddControllers()
                 .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
-            // HTTP hacia Users.API (IHttpClientFactory), propagando el X-Correlation-Id
+            
             services.AddHttpContextAccessor();
             services.AddTransient<CorrelationIdDelegatingHandler>();
             services.AddHttpClient<UsersClient>(client =>
@@ -39,7 +39,7 @@ namespace Notifications.API.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
-                // Comentarios XML de los DTOs y ejemplos de error del catálogo
+                
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
                 options.OperationFilter<ErrorExamplesOperationFilter>();

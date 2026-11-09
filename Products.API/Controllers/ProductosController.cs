@@ -7,6 +7,8 @@ using Products.API.Swagger;
 
 namespace Products.API.Controllers
 {
+ 
+    // Endpoints de productos. 
     /// <summary>
     /// Endpoints de productos. La lógica de negocio está en ProductoService.
     /// </summary>
@@ -44,6 +46,7 @@ namespace Products.API.Controllers
             return Ok(producto);
         }
 
+
         /// <summary>Crear nuevo producto</summary>
         [HttpPost]
         [Consumes("application/json")]
@@ -56,6 +59,7 @@ namespace Products.API.Controllers
             var producto = await _service.CreateAsync(req);
             return Created($"/api/products/{producto.Id}", producto);
         }
+
 
         /// <summary>Actualizar producto existente</summary>
         [HttpPut("{id}")]
@@ -70,6 +74,7 @@ namespace Products.API.Controllers
             return Ok(producto);
         }
 
+
         /// <summary>Eliminar producto</summary>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -82,7 +87,7 @@ namespace Products.API.Controllers
             return NoContent();
         }
 
-        // Un ID que no es un Guid válido (ej: /api/products/99) tampoco existe → PRD-001
+
         private static Guid ParseId(string id)
         {
             if (Guid.TryParse(id, out var guid))

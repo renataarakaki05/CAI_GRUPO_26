@@ -14,7 +14,7 @@ namespace Products.API.ExceptionHandlers
 
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)
         {
-            // Este handler solo atiende BusinessRuleException; las demás siguen al próximo handler
+           
             var ex = exception as BusinessRuleException;
             if (ex == null)
             {

@@ -8,10 +8,10 @@ namespace Notifications.API.Models
 
         public string Mensaje { get; set; } = string.Empty;
 
-        // Email | Push | SMS
+        
         public string Tipo { get; set; } = string.Empty;
 
-        // Pendiente | Enviada | Fallida
+        
         public string Estado { get; set; } = string.Empty;
 
         public DateTime FechaEnvio { get; set; } = DateTime.UtcNow;

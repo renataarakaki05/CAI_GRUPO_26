@@ -7,6 +7,9 @@ using Notifications.API.Swagger;
 
 namespace Notifications.API.Controllers
 {
+  
+    //endpoints de notificaciones. La lógica de negocio está en NotificacionService.
+    
     /// <summary>
     /// Endpoints de notificaciones. La lógica de negocio está en NotificacionService.
     /// </summary>
@@ -23,6 +26,7 @@ namespace Notifications.API.Controllers
             _service = service;
         }
 
+        // registrar y simular envío de notificación
         /// <summary>Registrar y simular envío de notificación</summary>
         [HttpPost("send")]
         [Consumes("application/json")]
@@ -36,6 +40,7 @@ namespace Notifications.API.Controllers
             return Created($"/api/notifications/{notificacion.UsuarioId}", notificacion);
         }
 
+        //listar notificaciones de un usuario
         /// <summary>Listar notificaciones de un usuario</summary>
         [HttpGet("{userId}")]
         [ProducesResponseType(typeof(IEnumerable<NotificacionDto>), StatusCodes.Status200OK)]
@@ -43,7 +48,7 @@ namespace Notifications.API.Controllers
         [ErrorExample(StatusCodes.Status500InternalServerError, ErrorCodes.NTF_004)]
         public async Task<IActionResult> GetByUsuario(string userId)
         {
-            // Un userId que no es un Guid válido tampoco tiene notificaciones → NTF-003
+            //un userId que no es un Guid válido tamp tiene notificaciones, NTF-003
             if (!Guid.TryParse(userId, out var id))
             {
                 throw new NotFoundException(ErrorCodes.NTF_003, "No se encontraron notificaciones para el usuario.");

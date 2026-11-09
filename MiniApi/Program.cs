@@ -8,24 +8,24 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         
-        // 1. Logging
+        // logging
         builder.AddAppLogging();
         
-        // 2. Servicios (Swagger, HealthChecks, Dapper, etc.)
+        // servicios (Swagger, HealthChecks, Dapper, etc.)
         builder.Services.AddAppServices(); 
         var app = builder.Build();
         
-        // 3. Inicializar DB
+        // inicializar bd
         using (var scope = app.Services.CreateScope())
             scope.ServiceProvider.GetRequiredService<DatabaseInitializer>().Initialize();
-        // Log de ejemplo
+        
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         logger.LogError("OK");
         
-        // 4. Middleware (Swagger UI, Serilog, HealthChecks)
+        // middleware (Swagger UI, Serilog, HealthChecks)
         app.UseAppMiddleware(); 
         
-        // 5. Endpoints
+        // endpoints
         app.MapAppEndpoints();
         app.Run();
     }
