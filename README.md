@@ -20,7 +20,7 @@ Todos los microservicios se construyeron a partir del proyecto base de la cáted
 | Products.API | 5101 | Catálogo de productos: alta, baja, modificación y consulta con filtros por categoría y nombre. | Terminado |
 | Users.API | 5102 | Registro y login de usuarios, con bloqueo tras 3 intentos fallidos. | Terminado |
 | Orders.API | 5103 | Creación de órdenes validando usuario, productos y stock; cambios de estado. | Terminado |
-| Cart.API | 5104 | Carrito de compras por usuario, validando productos y stock contra Products.API. | Pendiente |
+| Cart.API | 5104 | Carrito de compras por usuario, validando productos y stock contra Products.API. | Terminado |
 | Notifications.API | 5105 | Registro y envío simulado de notificaciones (Email, Push, SMS) a usuarios existentes. | Terminado |
 
 ## Diagrama de arquitectura
@@ -217,7 +217,7 @@ Las respuestas nunca incluyen el stack trace. En `appsettings.Development.json` 
 | errorCode | HTTP | errorMessage | Cuándo se devuelve |
 |---|---|---|---|
 | CRT-001 | 404 | Carrito no encontrado. | GET/PUT/DELETE cuando el userId no tiene carrito activo. |
-| CRT-002 | 404 | Producto no encontrado. | POST/PUT cuando el ProductoId no existe en Products.API. |
+| CRT-002 | 404 | Producto no encontrado. | POST/PUT cuando el ProductoId no existe en Products.API, o PUT/DELETE cuando el producto no está en el carrito. |
 | CRT-003 | 422 | Stock insuficiente para agregar al carrito. | POST/PUT cuando la cantidad supera el stock disponible. |
 | CRT-004 | 400 | Cantidad inválida. | POST/PUT cuando la cantidad es menor o igual a cero. |
 | CRT-005 | 500 | Error interno al procesar el carrito. | Error inesperado en servicio o persistencia. |
@@ -279,5 +279,5 @@ Capturas de Swagger UI mostrando ejemplos de response de error con `errorCode` y
 | Products.API | [GET lista](docs/products-get-lista.png) · POST [1](docs/products-post-1.png) [2](docs/products-post-2.png) · GET por ID [1](docs/products-get-id-1.png) [2](docs/products-get-id-2.png) · PUT [1](docs/products-put-1.png) [2](docs/products-put-2.png) · [DELETE](docs/products-delete.png) |
 | Users.API | Register [1](docs/users-register-1.png) [2](docs/users-register-2.png) · Login [1](docs/users-login-1.png) [2](docs/users-login-2.png) [3](docs/users-login-3.png) [4](docs/users-login-4.png) · GET por ID [1](docs/users-get-id-1.png) [2](docs/users-get-id-2.png) |
 | Orders.API | [GET lista](docs/orders-get-lista.png) · POST [1](docs/orders-post-1.png) [2](docs/orders-post-2.png) [3](docs/orders-post-3.png) [4](docs/orders-post-4.png) · GET por ID [1](docs/orders-get-id-1.png) [2](docs/orders-get-id-2.png) · PUT [1](docs/orders-put-1.png) [2](docs/orders-put-2.png) [3](docs/orders-put-3.png) |
-| Cart.API | Pendiente |
+| Cart.API | [GET](docs/cart-get.png) · POST [1](docs/cart-post-1.png) [2](docs/cart-post-2.png) [3](docs/cart-post-3.png) · PUT [1](docs/cart-put-1.png) [2](docs/cart-put-2.png) [3](docs/cart-put-3.png) · [DELETE item](docs/cart-delete-item.png) · [DELETE carrito](docs/cart-delete.png) |
 | Notifications.API | POST [1](docs/notifications-post-1.png) [2](docs/notifications-post-2.png) · GET [1](docs/notifications-get-1.png) [2](docs/notifications-get-2.png) |
