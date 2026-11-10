@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cart.API.Controllers
 {
-    
+    /// <summary>
     /// Endpoints del carrito de compras.
-    
+    /// </summary>
     // el controller solo recibe el pedido y se lo pasa al servicio, la logica esta en CarritoService
     // las etiquetas ErrorExample son para q swagger muestre los errores q puede devolver cada endpoint
     [ApiController]
@@ -24,7 +24,7 @@ namespace Cart.API.Controllers
             _service = service;
         }
 
-        //Obtener carrito del usuario
+        /// <summary>Obtener carrito del usuario</summary>
         // GET /api/cart/{userId}
         [HttpGet("{userId}")]
         [ProducesResponseType(typeof(CarritoDto), StatusCodes.Status200OK)]
@@ -36,7 +36,7 @@ namespace Cart.API.Controllers
             return Ok(carrito);
         }
 
-        //Agregar producto al carrito
+        /// <summary>Agregar producto al carrito</summary>
         // POST /api/cart/{userId}/items
         [HttpPost("{userId}/items")]
         [Consumes("application/json")]
@@ -51,7 +51,7 @@ namespace Cart.API.Controllers
             return Ok(carrito);
         }
 
-        //Actualizar cantidad de un item
+        /// <summary>Actualizar cantidad de un item</summary>
         // PUT /api/cart/{userId}/items/{productId}
         [HttpPut("{userId}/items/{productId}")]
         [Consumes("application/json")]
@@ -67,7 +67,7 @@ namespace Cart.API.Controllers
             return Ok(carrito);
         }
 
-        //Quitar un producto del carrito
+        /// <summary>Quitar un producto del carrito</summary>
         // DELETE /api/cart/{userId}/items/{productId}
         [HttpDelete("{userId}/items/{productId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -79,7 +79,7 @@ namespace Cart.API.Controllers
             return NoContent();
         }
 
-        //Vaciar carrito completo
+        /// <summary>Vaciar carrito completo</summary>
         // DELETE /api/cart/{userId}
         [HttpDelete("{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
