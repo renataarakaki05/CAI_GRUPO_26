@@ -18,6 +18,7 @@ namespace Users.API.Controllers
             _service = service;
         }
 
+        /// <summary>Registrar nuevo usuario</summary>
         [HttpPost("register")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
@@ -26,10 +27,10 @@ namespace Users.API.Controllers
             ValidarBody(req);
 
             var usuario = await _service.RegistrarAsync(req);
-            return Created($"/api/users/{usuario.Id}", usuario); // Registrar nuevo usuario
+            return Created($"/api/users/{usuario.Id}", usuario);
         }
 
-        // Autenticar usuario (email + password)
+        /// <summary>Autenticar usuario (email + password)</summary>
         [HttpPost("login")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
@@ -41,7 +42,7 @@ namespace Users.API.Controllers
             return Ok(usuario);
         }
 
-        // Obtener usuario por ID (lo usan Orders.API y Notifications.API)
+        /// <summary>Obtener usuario por ID (lo usan Orders.API y Notifications.API)</summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(string id)
