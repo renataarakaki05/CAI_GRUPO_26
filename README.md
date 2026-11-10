@@ -247,8 +247,10 @@ Cada servicio escribe sus logs en la carpeta `logs/` de su proyecto:
 | Destino | Formato | Contenido |
 |---|---|---|
 | Consola | Texto legible | Todos los logs, con servicio, Correlation ID y endpoint |
-| `logs/<servicio>.json` | JSON estructurado | Timestamp, nivel, servicio, endpoint, Correlation ID y errorCode cuando aplica |
-| `logs/audit.log` | Texto | Una línea por request: fecha, Correlation ID, método, ruta, status y duración |
+| `logs/<servicio>AAAAMMDD.json` | JSON estructurado | Timestamp, nivel, servicio, endpoint, Correlation ID y errorCode cuando aplica |
+| `logs/auditAAAAMMDD.log` | Texto | Una línea por request: fecha, Correlation ID, método, ruta, status y duración |
+
+Los archivos se crean uno por día (`RollingInterval.Day` de Serilog), así que el nombre lleva la fecha: por ejemplo `logs/users20261109.json` y `logs/audit20261109.log`.
 
 - Inicio y fin de cada request con su duración.
 - Errores de negocio (4xx) como `Warning`; errores inesperados (500) como `Error`.

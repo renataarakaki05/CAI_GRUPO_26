@@ -24,23 +24,24 @@ namespace Products.API.Clients
             }
             catch (HttpRequestException ex)
             {
-                // Mientras Orders.API no esté levantada no bloqueamos el borrado
-                _logger.LogWarning(ex, "No se pudo contactar a Orders.API; se asume que el producto {ProductoId} no tiene órdenes activas", productoId);
-                return false;
+                // Si Orders.API está caída no podemos saber si hay órdenes activas, así que NO se borra.
+                // La excepción llega al GlobalExceptionHandler, que responde 500 con PRD-005.
+                throw new InvalidOperationException(
+                    $"No se pudo contactar a Orders.API para verificar las órdenes del producto {productoId}.", ex);
             }
 
             // Verificar siempre el status antes de leer el body
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("Orders.API respondió {StatusCode}; se asume que el producto {ProductoId} no tiene órdenes activas",
-                    (int)response.StatusCode, productoId);
-                return false;
+                throw new InvalidOperationException(
+                    $"Orders.API respondió {(int)response.StatusCode} al verificar las órdenes del producto {productoId}.");
             }
 
             var orders = await response.Content.ReadFromJsonAsync<List<OrderDto>>(ct);
             if (orders == null)
             {
-                return false;
+                throw new InvalidOperationException(
+                    $"Orders.API devolvió una respuesta vacía al verificar las órdenes del producto {productoId}.");
             }
 
             foreach (var order in orders)
